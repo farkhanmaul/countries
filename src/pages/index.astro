@@ -18,18 +18,17 @@ let error = null;
   
   <main class="flex-1">
     <!-- Hero Section -->
-    <section class="bg-gradient-to-br from-primary-50 to-blue-100 dark:from-gray-800 dark:to-gray-900 py-16">
+    <section class="bg-gradient-to-br from-primary-50 to-accent-50 dark:from-primary-900/20 dark:to-accent-900/20 py-12">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center">
-          <h1 class="text-4xl md:text-6xl font-bold text-gray-900 dark:text-white mb-6">
+          <h1 class="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
             Explore the
-            <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary-600 to-blue-600">
+            <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary-600 to-accent-600">
               World
             </span>
           </h1>
-          <p class="text-xl text-gray-600 dark:text-gray-300 mb-8 max-w-3xl mx-auto">
-            Discover detailed information about countries worldwide. Search, filter, and explore 
-            population, geography, culture, languages, and much more.
+          <p class="text-lg text-gray-600 dark:text-gray-300 mb-6 max-w-2xl mx-auto">
+            Discover countries worldwide with instant search and advanced filtering
           </p>
           
           <!-- Search Section -->
@@ -41,52 +40,37 @@ let error = null;
     </section>
 
     <!-- Filters and Controls -->
-    <section class="py-6 bg-gray-50 dark:bg-gray-800/50 border-y border-gray-200 dark:border-gray-700">
+    <section class="py-3 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 shadow-sm">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <!-- Filter Header -->
-        <div class="text-center mb-6">
-          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Filter & Sort Options</h2>
-          <p class="text-sm text-gray-600 dark:text-gray-400">Customize your country exploration experience</p>
-        </div>
-        
         <!-- Filter Controls -->
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-600 p-6">
-          <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 items-end">
-            <!-- Region Filter -->
-            <div class="space-y-2">
-              <RegionFilter />
-            </div>
-            
-            <!-- Sorting Controls -->
-            <div class="space-y-2">
-              <SortingControls />
-            </div>
-            
-            <!-- View Mode Toggle -->
-            <div class="space-y-2 md:col-span-2 xl:col-span-1">
-              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                View Mode
-              </label>
-              <div class="flex rounded-lg border border-gray-300 dark:border-gray-600 p-1 bg-gray-50 dark:bg-gray-700">
-                <button 
-                  id="view-grid" 
-                  class="view-mode-btn active flex-1 flex items-center justify-center px-3 py-2 rounded-md text-sm font-medium bg-white dark:bg-gray-800 text-primary-600 dark:text-primary-400 shadow-sm"
-                >
-                  <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path>
-                  </svg>
-                  Grid
-                </button>
-                <button 
-                  id="view-list" 
-                  class="view-mode-btn flex-1 flex items-center justify-center px-3 py-2 rounded-md text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
-                >
-                  <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"></path>
-                  </svg>
-                  List
-                </button>
-              </div>
+        <div class="flex flex-wrap items-center justify-center gap-4 lg:gap-6">
+          <!-- Region Filter -->
+          <div class="min-w-0 flex-shrink-0">
+            <RegionFilter />
+          </div>
+          
+          <!-- Sorting Controls -->
+          <div class="min-w-0 flex-shrink-0">
+            <SortingControls />
+          </div>
+          
+          <!-- View Mode Toggle -->
+          <div class="min-w-0 flex-shrink-0">
+            <div class="flex rounded-lg border border-primary-200 dark:border-primary-700 p-1 bg-primary-50 dark:bg-primary-900/20">
+              <button 
+                id="view-grid" 
+                class="view-mode-btn active flex items-center justify-center px-3 py-2 rounded-md text-sm font-medium bg-white dark:bg-primary-800 text-primary-600 dark:text-primary-300 shadow-sm"
+              >
+                <i data-lucide="grid-3x3" class="w-4 h-4 mr-2"></i>
+                Grid
+              </button>
+              <button 
+                id="view-list" 
+                class="view-mode-btn flex items-center justify-center px-3 py-2 rounded-md text-sm font-medium text-primary-500 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-200"
+              >
+                <i data-lucide="list" class="w-4 h-4 mr-2"></i>
+                List
+              </button>
             </div>
           </div>
         </div>
@@ -94,24 +78,23 @@ let error = null;
     </section>
 
     <!-- Countries Section -->
-    <section class="py-8">
+    <section class="py-4">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <!-- Welcome Message -->
-        <div id="welcome-message" class="text-center py-20">
-          <div class="mx-auto w-24 h-24 text-primary-500 dark:text-primary-400 mb-6">
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-            </svg>
+        <div id="welcome-message" class="text-center py-16">
+          <div class="mx-auto w-20 h-20 text-primary-500 dark:text-primary-400 mb-6">
+            <i data-lucide="globe" class="w-full h-full"></i>
           </div>
           <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">Welcome to Country Explorer!</h3>
-          <p class="text-lg text-gray-600 dark:text-gray-400 mb-6 max-w-2xl mx-auto">
-            Start your journey by searching for a country, filtering by region, or browse all countries to discover fascinating information about nations around the world.
+          <p class="text-gray-600 dark:text-gray-400 mb-6 max-w-xl mx-auto">
+            Start exploring by searching for countries, filtering by region, or browse all available data.
           </p>
           <button 
             id="load-all-countries" 
-            class="px-6 py-3 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors duration-200 font-medium"
+            class="px-6 py-3 bg-gradient-to-r from-primary-600 to-accent-600 text-white rounded-lg hover:from-primary-700 hover:to-accent-700 transition-all duration-200 font-medium shadow-elegant"
           >
-            🌍 Explore All Countries
+            <i data-lucide="globe" class="w-4 h-4 mr-2 inline"></i>
+            Explore All Countries
           </button>
         </div>
 
@@ -766,5 +749,10 @@ let error = null;
   // Initialize app when DOM is loaded
   document.addEventListener('DOMContentLoaded', () => {
     new CountryExplorer();
+    
+    // Initialize Lucide icons
+    if (typeof lucide !== 'undefined') {
+      lucide.createIcons();
+    }
   });
 </script>

@@ -58,9 +58,9 @@
   
   <!-- Search Type Description -->
   <div class="flex items-center justify-center mt-3">
-    <div class="flex items-center px-3 py-1 bg-gray-100 dark:bg-gray-800 rounded-full">
-      <span id="search-type-icon" class="mr-2">🏳️</span>
-      <span id="search-type-label" class="text-sm font-medium text-gray-700 dark:text-gray-300">Country Name</span>
+    <div class="flex items-center px-3 py-1 bg-primary-50 dark:bg-primary-900/20 rounded-full border border-primary-200 dark:border-primary-800">
+      <i id="search-type-icon" data-lucide="flag" class="w-4 h-4 mr-2 text-primary-600 dark:text-primary-400"></i>
+      <span id="search-type-label" class="text-sm font-medium text-primary-700 dark:text-primary-300">Country Name</span>
     </div>
   </div>
   <p id="search-description" class="text-xs text-gray-500 dark:text-gray-400 mt-2 text-center">
@@ -133,25 +133,18 @@
         }
       });
 
-      // Dispatch search events with debounce
+      // Dispatch search events immediately (real-time search)
       this.searchInput.addEventListener('input', (e) => {
         const target = e.target as HTMLInputElement;
         
-        // Clear existing timer
-        if (this.debounceTimer) {
-          clearTimeout(this.debounceTimer);
-        }
-        
-        // Set new timer for debounced search
-        this.debounceTimer = window.setTimeout(() => {
-          const event = new CustomEvent('country-search', {
-            detail: { 
-              query: target.value.trim(),
-              searchType: this.currentSearchType
-            }
-          });
-          document.dispatchEvent(event);
-        }, 300);
+        // Immediate search without debounce
+        const event = new CustomEvent('country-search', {
+          detail: { 
+            query: target.value.trim(),
+            searchType: this.currentSearchType
+          }
+        });
+        document.dispatchEvent(event);
       });
     }
 
@@ -270,31 +263,31 @@
 
       const searchConfigs = {
         name: {
-          icon: '🏳️',
+          icon: 'flag',
           label: 'Country Name',
           placeholder: 'Search for a country...',
           description: 'Search by country name (e.g., "Indonesia", "United States")'
         },
         capital: {
-          icon: '🏛️',
+          icon: 'landmark',
           label: 'Capital City',
           placeholder: 'Search by capital city...',
           description: 'Search by capital city (e.g., "Jakarta", "Washington")'
         },
         currency: {
-          icon: '💰',
+          icon: 'coins',
           label: 'Currency',
           placeholder: 'Search by currency...',
           description: 'Search by currency (e.g., "USD", "Euro", "Rupiah")'
         },
         language: {
-          icon: '🗣️',
+          icon: 'languages',
           label: 'Language',
           placeholder: 'Search by language...',
           description: 'Search by language (e.g., "English", "Spanish", "Indonesian")'
         },
         demonym: {
-          icon: '👥',
+          icon: 'users',
           label: 'People',
           placeholder: 'Search by people...',
           description: 'Search by what people are called (e.g., "Indonesian", "American")'
@@ -303,10 +296,15 @@
 
       const config = searchConfigs[searchType as keyof typeof searchConfigs];
       if (config) {
-        this.searchTypeIcon.textContent = config.icon;
+        this.searchTypeIcon.setAttribute('data-lucide', config.icon);
         this.searchTypeLabel.textContent = config.label;
         this.searchInput.placeholder = config.placeholder;
         this.searchDescription.textContent = config.description;
+        
+        // Re-initialize Lucide icons for the updated icon
+        if (typeof lucide !== 'undefined') {
+          lucide.createIcons();
+        }
       }
     }
   }
@@ -314,5 +312,10 @@
   // Initialize search bar when DOM is loaded
   document.addEventListener('DOMContentLoaded', () => {
     new SearchBar();
+    
+    // Initialize Lucide icons
+    if (typeof lucide !== 'undefined') {
+      lucide.createIcons();
+    }
   });
 </script>
