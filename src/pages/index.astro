@@ -50,15 +50,17 @@ try {
     <!-- Filters and Controls -->
     <section class="py-8 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex flex-col lg:flex-row gap-6 items-start lg:items-center">
+        <div class="flex flex-col lg:flex-row gap-6 items-stretch lg:items-end">
           <!-- Region Filter -->
-          <div class="w-full lg:w-64">
+          <div class="w-full lg:w-64 flex-shrink-0">
             <RegionFilter />
           </div>
           
           <!-- Sorting Controls -->
-          <div class="w-full lg:flex-1">
-            <SortingControls />
+          <div class="w-full lg:flex-1 flex items-end">
+            <div class="w-full">
+              <SortingControls />
+            </div>
           </div>
         </div>
       </div>
