@@ -12,8 +12,86 @@
         </h1>
       </div>
 
-      <!-- Dark Mode Toggle -->
-      <div class="flex items-center">
+      <!-- Navigation Menu & Dark Mode Toggle -->
+      <div class="flex items-center space-x-4">
+        <!-- Advanced Search Menu -->
+        <div class="relative">
+          <button 
+            id="advanced-search-btn"
+            type="button"
+            class="flex items-center px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-all duration-200"
+          >
+            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+            </svg>
+            Advanced Search
+            <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+            </svg>
+          </button>
+          
+          <!-- Dropdown Menu -->
+          <div 
+            id="advanced-search-dropdown"
+            class="absolute right-0 mt-2 w-64 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-600 hidden z-50"
+          >
+            <div class="p-4">
+              <p class="text-sm font-medium text-gray-900 dark:text-white mb-3">Search by:</p>
+              <div class="space-y-2">
+                <button 
+                  data-search-type="name" 
+                  class="advanced-search-option w-full flex items-center px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors active"
+                >
+                  <span class="mr-3">🏳️</span>
+                  <div class="text-left">
+                    <div class="font-medium">Country Name</div>
+                    <div class="text-xs text-gray-500 dark:text-gray-400">Default search</div>
+                  </div>
+                </button>
+                <button 
+                  data-search-type="capital" 
+                  class="advanced-search-option w-full flex items-center px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                >
+                  <span class="mr-3">🏛️</span>
+                  <div class="text-left">
+                    <div class="font-medium">Capital City</div>
+                    <div class="text-xs text-gray-500 dark:text-gray-400">e.g., Jakarta, London</div>
+                  </div>
+                </button>
+                <button 
+                  data-search-type="currency" 
+                  class="advanced-search-option w-full flex items-center px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                >
+                  <span class="mr-3">💰</span>
+                  <div class="text-left">
+                    <div class="font-medium">Currency</div>
+                    <div class="text-xs text-gray-500 dark:text-gray-400">e.g., USD, Euro</div>
+                  </div>
+                </button>
+                <button 
+                  data-search-type="language" 
+                  class="advanced-search-option w-full flex items-center px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                >
+                  <span class="mr-3">🗣️</span>
+                  <div class="text-left">
+                    <div class="font-medium">Language</div>
+                    <div class="text-xs text-gray-500 dark:text-gray-400">e.g., English, Spanish</div>
+                  </div>
+                </button>
+                <button 
+                  data-search-type="demonym" 
+                  class="advanced-search-option w-full flex items-center px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                >
+                  <span class="mr-3">👥</span>
+                  <div class="text-left">
+                    <div class="font-medium">People</div>
+                    <div class="text-xs text-gray-500 dark:text-gray-400">e.g., Indonesian, American</div>
+                  </div>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
         <button 
           id="theme-toggle"
           type="button"
@@ -54,12 +132,110 @@
 <script>
   import { initializeTheme, toggleTheme } from '../utils/theme';
 
-  // Initialize theme when the component loads
-  initializeTheme();
+  class Navbar {
+    private currentSearchType: string = 'name';
+    private dropdown: HTMLElement | null;
+    private dropdownButton: HTMLElement | null;
 
-  // Add click event listener to toggle button
-  const themeToggle = document.getElementById('theme-toggle');
-  if (themeToggle) {
-    themeToggle.addEventListener('click', toggleTheme);
+    constructor() {
+      this.dropdown = document.getElementById('advanced-search-dropdown');
+      this.dropdownButton = document.getElementById('advanced-search-btn');
+      this.init();
+    }
+
+    private init(): void {
+      // Initialize theme
+      initializeTheme();
+
+      // Theme toggle
+      const themeToggle = document.getElementById('theme-toggle');
+      if (themeToggle) {
+        themeToggle.addEventListener('click', toggleTheme);
+      }
+
+      // Advanced search dropdown
+      this.setupAdvancedSearch();
+    }
+
+    private setupAdvancedSearch(): void {
+      if (!this.dropdown || !this.dropdownButton) return;
+
+      // Toggle dropdown
+      this.dropdownButton.addEventListener('click', (e) => {
+        e.stopPropagation();
+        this.toggleDropdown();
+      });
+
+      // Close dropdown when clicking outside
+      document.addEventListener('click', (e) => {
+        if (!this.dropdown?.contains(e.target as Node) && 
+            !this.dropdownButton?.contains(e.target as Node)) {
+          this.closeDropdown();
+        }
+      });
+
+      // Handle search type selection
+      const searchOptions = document.querySelectorAll('.advanced-search-option');
+      searchOptions.forEach(option => {
+        option.addEventListener('click', (e) => {
+          e.preventDefault();
+          const searchType = (option as HTMLElement).dataset.searchType;
+          if (searchType) {
+            this.selectSearchType(searchType);
+          }
+        });
+      });
+    }
+
+    private toggleDropdown(): void {
+      if (!this.dropdown) return;
+      
+      const isHidden = this.dropdown.classList.contains('hidden');
+      if (isHidden) {
+        this.dropdown.classList.remove('hidden');
+        this.dropdown.classList.add('animate-in', 'fade-in-0', 'zoom-in-95');
+      } else {
+        this.closeDropdown();
+      }
+    }
+
+    private closeDropdown(): void {
+      if (!this.dropdown) return;
+      this.dropdown.classList.add('hidden');
+      this.dropdown.classList.remove('animate-in', 'fade-in-0', 'zoom-in-95');
+    }
+
+    private selectSearchType(searchType: string): void {
+      this.currentSearchType = searchType;
+
+      // Update active state
+      const options = document.querySelectorAll('.advanced-search-option');
+      options.forEach(option => {
+        const optionElement = option as HTMLElement;
+        if (optionElement.dataset.searchType === searchType) {
+          optionElement.classList.add('active', 'bg-primary-50', 'dark:bg-primary-900/20', 'text-primary-700', 'dark:text-primary-300');
+        } else {
+          optionElement.classList.remove('active', 'bg-primary-50', 'dark:bg-primary-900/20', 'text-primary-700', 'dark:text-primary-300');
+        }
+      });
+
+      // Dispatch event to update search bar
+      const event = new CustomEvent('search-type-changed', {
+        detail: { searchType }
+      });
+      document.dispatchEvent(event);
+
+      // Close dropdown
+      this.closeDropdown();
+    }
+
+    public getCurrentSearchType(): string {
+      return this.currentSearchType;
+    }
   }
+
+  // Initialize navbar when DOM is loaded
+  document.addEventListener('DOMContentLoaded', () => {
+    new Navbar();
+  });
 </script>

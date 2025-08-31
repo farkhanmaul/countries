@@ -41,18 +41,30 @@ let error = null;
     </section>
 
     <!-- Filters and Controls -->
-    <section class="py-8 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+    <section class="py-6 bg-gray-50 dark:bg-gray-800/50 border-y border-gray-200 dark:border-gray-700">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex flex-col lg:flex-row gap-6 items-stretch lg:items-end">
-          <!-- Region Filter -->
-          <div class="w-full lg:w-64 flex-shrink-0">
-            <RegionFilter />
-          </div>
-          
-          <!-- Sorting Controls -->
-          <div class="w-full lg:flex-1 flex items-end">
-            <div class="w-full">
+        <!-- Filter Header -->
+        <div class="text-center mb-6">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">Filter & Sort Options</h2>
+          <p class="text-sm text-gray-600 dark:text-gray-400">Customize your country exploration experience</p>
+        </div>
+        
+        <!-- Filter Controls -->
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-600 p-6">
+          <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 items-end">
+            <!-- Region Filter -->
+            <div class="space-y-2">
+              <RegionFilter />
+            </div>
+            
+            <!-- Sorting Controls -->
+            <div class="space-y-2">
               <SortingControls />
+            </div>
+            
+            <!-- View Mode Toggle -->
+            <div class="space-y-2 md:col-span-2 xl:col-span-1">
+              <ViewControls />
             </div>
           </div>
         </div>
@@ -248,7 +260,8 @@ let error = null;
       // Search events
       document.addEventListener('country-search', (e: Event) => {
         const customEvent = e as CustomEvent;
-        this.handleSearch(customEvent.detail.query, customEvent.detail.searchType);
+        console.log('Search event received:', customEvent.detail);
+        this.handleSearch(customEvent.detail.query, customEvent.detail.searchType || 'name');
       });
 
       // Region filter events
@@ -308,28 +321,35 @@ let error = null;
     }
 
     private async handleSearch(query: string, searchType: string = 'name'): Promise<void> {
+      console.log('handleSearch called with:', { query, searchType });
       this.currentFilters.search = query;
 
       if (!query.trim()) {
         // If search is empty, show all countries or current filtered results
         if (this.allCountries.length === 0) {
+          console.log('Loading all countries for empty search');
           await this.loadAllCountries();
         } else {
+          console.log('Applying filters for empty search');
           this.applyFilters();
         }
         return;
       }
 
       // Show loading state
+      console.log('Setting loading state for search');
       this.setLoading(true);
 
       try {
         // If using advanced search types, fetch specific data
         if (searchType !== 'name') {
+          console.log('Using advanced search for type:', searchType);
           await this.handleAdvancedSearch(query, searchType);
         } else {
           // Default name search
+          console.log('Using default name search');
           if (this.allCountries.length === 0) {
+            console.log('Loading all countries first');
             await this.loadAllCountries();
           }
           this.applyFilters();
@@ -584,6 +604,15 @@ let error = null;
           </div>
         </div>
       `;
+    }
+
+    private setLoading(loading: boolean): void {
+      this.isLoading = loading;
+      if (loading) {
+        this.showLoadingState();
+      } else {
+        this.hideLoadingState();
+      }
     }
 
     private showLoadingState(): void {

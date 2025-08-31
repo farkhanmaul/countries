@@ -3,24 +3,6 @@
 ---
 
 <div class="relative max-w-2xl mx-auto">
-  <!-- Search Type Selector -->
-  <div class="flex flex-wrap gap-2 mb-4 justify-center">
-    <button id="search-type-name" class="search-type-btn active px-3 py-1 text-sm rounded-full border border-primary-500 bg-primary-500 text-white">
-      🏳️ Country
-    </button>
-    <button id="search-type-capital" class="search-type-btn px-3 py-1 text-sm rounded-full border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:border-primary-500">
-      🏛️ Capital
-    </button>
-    <button id="search-type-currency" class="search-type-btn px-3 py-1 text-sm rounded-full border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:border-primary-500">
-      💰 Currency
-    </button>
-    <button id="search-type-language" class="search-type-btn px-3 py-1 text-sm rounded-full border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:border-primary-500">
-      🗣️ Language
-    </button>
-    <button id="search-type-demonym" class="search-type-btn px-3 py-1 text-sm rounded-full border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:border-primary-500">
-      👥 People
-    </button>
-  </div>
 
   <div class="relative">
     <!-- Search Icon -->
@@ -75,6 +57,12 @@
   </div>
   
   <!-- Search Type Description -->
+  <div class="flex items-center justify-center mt-3">
+    <div class="flex items-center px-3 py-1 bg-gray-100 dark:bg-gray-800 rounded-full">
+      <span id="search-type-icon" class="mr-2">🏳️</span>
+      <span id="search-type-label" class="text-sm font-medium text-gray-700 dark:text-gray-300">Country Name</span>
+    </div>
+  </div>
   <p id="search-description" class="text-xs text-gray-500 dark:text-gray-400 mt-2 text-center">
     Search by country name (e.g., "Indonesia", "United States")
   </p>
@@ -95,15 +83,17 @@
     private suggestions: HTMLDivElement | null;
     private debounceTimer: number | null = null;
     private currentSearchType: string = 'name';
-    private searchTypeButtons: NodeListOf<HTMLButtonElement>;
     private searchDescription: HTMLElement | null;
+    private searchTypeIcon: HTMLElement | null;
+    private searchTypeLabel: HTMLElement | null;
 
     constructor() {
       this.searchInput = document.getElementById('search-input') as HTMLInputElement;
       this.clearButton = document.getElementById('clear-search') as HTMLButtonElement;
       this.suggestions = document.getElementById('search-suggestions') as HTMLDivElement;
-      this.searchTypeButtons = document.querySelectorAll('.search-type-btn');
       this.searchDescription = document.getElementById('search-description');
+      this.searchTypeIcon = document.getElementById('search-type-icon');
+      this.searchTypeLabel = document.getElementById('search-type-label');
       
       this.init();
     }
@@ -111,11 +101,10 @@
     private init(): void {
       if (!this.searchInput || !this.clearButton) return;
 
-      // Handle search type buttons
-      this.searchTypeButtons.forEach(button => {
-        button.addEventListener('click', () => {
-          this.handleSearchTypeChange(button.id.replace('search-type-', ''));
-        });
+      // Listen for search type changes from navbar
+      document.addEventListener('search-type-changed', (e: Event) => {
+        const customEvent = e as CustomEvent;
+        this.handleSearchTypeChange(customEvent.detail.searchType);
       });
 
       // Handle input events
@@ -144,16 +133,25 @@
         }
       });
 
-      // Dispatch search events
+      // Dispatch search events with debounce
       this.searchInput.addEventListener('input', (e) => {
         const target = e.target as HTMLInputElement;
-        const event = new CustomEvent('country-search', {
-          detail: { 
-            query: target.value.trim(),
-            searchType: this.currentSearchType
-          }
-        });
-        document.dispatchEvent(event);
+        
+        // Clear existing timer
+        if (this.debounceTimer) {
+          clearTimeout(this.debounceTimer);
+        }
+        
+        // Set new timer for debounced search
+        this.debounceTimer = window.setTimeout(() => {
+          const event = new CustomEvent('country-search', {
+            detail: { 
+              query: target.value.trim(),
+              searchType: this.currentSearchType
+            }
+          });
+          document.dispatchEvent(event);
+        }, 300);
       });
     }
 
@@ -251,17 +249,6 @@
       // Update current search type
       this.currentSearchType = searchType;
       
-      // Update button states
-      this.searchTypeButtons.forEach(button => {
-        if (button.id === `search-type-${searchType}`) {
-          button.classList.add('active', 'bg-primary-500', 'text-white');
-          button.classList.remove('text-gray-700', 'dark:text-gray-300', 'border-gray-300', 'dark:border-gray-600');
-        } else {
-          button.classList.remove('active', 'bg-primary-500', 'text-white');
-          button.classList.add('text-gray-700', 'dark:text-gray-300', 'border-gray-300', 'dark:border-gray-600');
-        }
-      });
-
       // Update placeholder and description
       this.updateSearchPlaceholder(searchType);
       
@@ -279,26 +266,36 @@
     }
 
     private updateSearchPlaceholder(searchType: string): void {
-      if (!this.searchInput || !this.searchDescription) return;
+      if (!this.searchInput || !this.searchDescription || !this.searchTypeIcon || !this.searchTypeLabel) return;
 
       const searchConfigs = {
         name: {
+          icon: '🏳️',
+          label: 'Country Name',
           placeholder: 'Search for a country...',
           description: 'Search by country name (e.g., "Indonesia", "United States")'
         },
         capital: {
+          icon: '🏛️',
+          label: 'Capital City',
           placeholder: 'Search by capital city...',
           description: 'Search by capital city (e.g., "Jakarta", "Washington")'
         },
         currency: {
+          icon: '💰',
+          label: 'Currency',
           placeholder: 'Search by currency...',
           description: 'Search by currency (e.g., "USD", "Euro", "Rupiah")'
         },
         language: {
+          icon: '🗣️',
+          label: 'Language',
           placeholder: 'Search by language...',
           description: 'Search by language (e.g., "English", "Spanish", "Indonesian")'
         },
         demonym: {
+          icon: '👥',
+          label: 'People',
           placeholder: 'Search by people...',
           description: 'Search by what people are called (e.g., "Indonesian", "American")'
         }
@@ -306,6 +303,8 @@
 
       const config = searchConfigs[searchType as keyof typeof searchConfigs];
       if (config) {
+        this.searchTypeIcon.textContent = config.icon;
+        this.searchTypeLabel.textContent = config.label;
         this.searchInput.placeholder = config.placeholder;
         this.searchDescription.textContent = config.description;
       }
