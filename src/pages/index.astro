@@ -142,7 +142,10 @@ let error = null;
 
         <!-- Countries Grid (hidden initially) -->
         <div id="countries-container" class="hidden">
-          <CountryGrid countries={[]} />
+          <!-- Dynamic countries grid will be inserted here -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" id="countries-grid">
+            <!-- Countries will be dynamically added here -->
+          </div>
         </div>
 
         <!-- Loading State -->
@@ -349,26 +352,40 @@ let error = null;
     }
 
     private async loadAllCountries(): Promise<void> {
-      if (this.isLoading) return;
+      console.log('loadAllCountries called');
+      if (this.isLoading) {
+        console.log('Already loading, skipping');
+        return;
+      }
 
+      console.log('Starting to load all countries');
       this.showLoadingState();
       this.isLoading = true;
 
       try {
+        console.log('Fetching countries from API...');
         this.allCountries = await fetchAllCountries();
+        console.log('Fetched', this.allCountries.length, 'countries');
+        
         this.filteredCountries = [...this.allCountries];
+        console.log('Set filtered countries:', this.filteredCountries.length);
         
         // Check if using fallback data
         if (this.allCountries.length === 8) {
+          console.log('Using fallback data, showing banner');
           this.showApiFallbackBanner();
         }
         
         this.hideWelcomeMessage();
+        console.log('About to render countries');
         this.renderCountries();
         this.updateResultsCount();
         this.hideLoadingState();
         this.showResults();
+        
+        console.log('Countries loaded and displayed successfully');
       } catch (error) {
+        console.error('Failed to load countries:', error);
         this.showErrorState(error instanceof Error ? error.message : 'Failed to load countries');
       } finally {
         this.isLoading = false;
@@ -507,46 +524,49 @@ let error = null;
     }
 
     private renderCountries(): void {
+      console.log('renderCountries called with', this.filteredCountries.length, 'countries');
+      
       const container = document.getElementById('countries-container');
-      if (!container) return;
+      const grid = document.getElementById('countries-grid');
+      
+      if (!container || !grid) {
+        console.error('Countries container or grid not found');
+        return;
+      }
 
       // Update view mode classes
       const isGridView = this.currentViewMode === 'grid';
-      const gridContainer = container.querySelector('.grid, .space-y-4');
+      grid.className = `transition-all duration-300 ${
+        isGridView 
+          ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6' 
+          : 'space-y-4'
+      }`;
+
+      // Clear existing content
+      grid.innerHTML = '';
       
-      if (gridContainer) {
-        gridContainer.className = `transition-all duration-300 ${
-          isGridView 
-            ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6' 
-            : 'space-y-4'
-        }`;
+      if (this.filteredCountries.length === 0) {
+        console.log('No countries to display, showing no results state');
+        this.showNoResultsState();
+        return;
       }
 
-      // Clear and repopulate
-      const existingGrid = container.querySelector('.grid, .space-y-4');
-      if (existingGrid) {
-        existingGrid.innerHTML = '';
-        
-        if (this.filteredCountries.length === 0) {
-          this.showNoResultsState();
-          return;
-        }
+      console.log('Rendering', this.filteredCountries.length, 'countries');
 
-        this.filteredCountries.forEach((country, index) => {
-          const countryElement = this.createCountryCard(country, this.currentViewMode);
-          countryElement.style.opacity = '0';
-          countryElement.style.transform = 'translateY(20px)';
-          
-          existingGrid.appendChild(countryElement);
-          
-          // Animate entry
-          setTimeout(() => {
-            countryElement.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
-            countryElement.style.opacity = '1';
-            countryElement.style.transform = 'translateY(0)';
-          }, index * 50);
-        });
-      }
+      // Add countries
+      this.filteredCountries.forEach((country, index) => {
+        const countryElement = this.createCountryCard(country, this.currentViewMode);
+        countryElement.style.opacity = '0';
+        countryElement.style.transform = 'translateY(20px)';
+        grid.appendChild(countryElement);
+
+        // Animate in
+        setTimeout(() => {
+          countryElement.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+          countryElement.style.opacity = '1';
+          countryElement.style.transform = 'translateY(0)';
+        }, index * 50);
+      });
     }
 
     private createCountryCard(country: Country, viewMode: 'grid' | 'list'): HTMLElement {
@@ -711,10 +731,9 @@ let error = null;
     }
 
     private showNoResultsState(): void {
-      const container = document.getElementById('countries-container');
-      const existingGrid = container?.querySelector('.grid, .space-y-4');
-      if (existingGrid) {
-        existingGrid.innerHTML = `
+      const grid = document.getElementById('countries-grid');
+      if (grid) {
+        grid.innerHTML = `
           <div class="col-span-full text-center py-20">
             <div class="mx-auto w-24 h-24 text-gray-400 dark:text-gray-500 mb-4">
               <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
