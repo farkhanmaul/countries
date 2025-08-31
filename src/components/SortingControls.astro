@@ -2,93 +2,45 @@
 // No server-side logic needed for sorting controls
 ---
 
-<div class="flex flex-wrap gap-4 items-center">
+<div class="flex items-center gap-3">
   <!-- Sort By Dropdown -->
-  <div class="flex items-center gap-2">
-    <label for="sort-by" class="text-sm font-medium text-gray-700 dark:text-gray-300 whitespace-nowrap">
-      Sort by:
-    </label>
-    <div class="relative">
-      <select
-        id="sort-by"
-        class="px-3 py-2 text-sm text-gray-900 dark:text-white bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:focus:ring-primary-400 dark:focus:border-primary-400 transition-colors duration-200 appearance-none cursor-pointer pr-8"
-      >
-        <option value="name">Name</option>
-        <option value="population">Population</option>
-        <option value="area">Area</option>
-      </select>
-      <div class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
-        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-        </svg>
-      </div>
+  <div class="relative">
+    <select
+      id="sort-by"
+      class="px-3 py-2.5 text-sm text-gray-900 dark:text-white bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:focus:ring-primary-400 dark:focus:border-primary-400 transition-colors duration-200 appearance-none cursor-pointer pr-8"
+    >
+      <option value="name">Sort by Name</option>
+      <option value="population">Sort by Population</option>
+      <option value="area">Sort by Area</option>
+    </select>
+    <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+      <i data-lucide="chevron-down" class="w-4 h-4 text-gray-400 dark:text-gray-500"></i>
     </div>
   </div>
 
   <!-- Sort Order Toggle -->
-  <div class="flex items-center gap-2">
-    <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Order:</span>
-    <button
-      id="sort-order-toggle"
-      type="button"
-      class="inline-flex items-center px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:focus:ring-primary-400 dark:focus:border-primary-400 transition-colors duration-200"
-      data-order="asc"
-    >
-      <span id="sort-order-text">A-Z</span>
-      <svg id="sort-order-icon" class="w-4 h-4 ml-2 transform transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 11l5-5m0 0l5 5m-5-5v12"></path>
-      </svg>
-    </button>
-  </div>
-
-  <!-- View Toggle (Grid/List) -->
-  <div class="flex items-center gap-2 ml-auto">
-    <span class="text-sm font-medium text-gray-700 dark:text-gray-300">View:</span>
-    <div class="flex rounded-md overflow-hidden border border-gray-300 dark:border-gray-600">
-      <button
-        id="grid-view"
-        type="button"
-        class="px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:focus:ring-primary-400 dark:focus:border-primary-400 transition-colors duration-200 active border-r border-gray-300 dark:border-gray-600"
-        data-view="grid"
-      >
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path>
-        </svg>
-      </button>
-      <button
-        id="list-view"
-        type="button"
-        class="px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:focus:ring-primary-400 dark:focus:border-primary-400 transition-colors duration-200"
-        data-view="list"
-      >
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"></path>
-        </svg>
-      </button>
-    </div>
-  </div>
+  <button
+    id="sort-order-toggle"
+    type="button"
+    class="inline-flex items-center px-3 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:focus:ring-primary-400 dark:focus:border-primary-400 transition-colors duration-200"
+    data-order="asc"
+    title="Toggle sort order"
+  >
+    <i data-lucide="arrow-up" id="sort-order-icon" class="w-4 h-4 transform transition-transform duration-200"></i>
+  </button>
 </div>
 
 <script>
   class SortingControls {
     private sortBySelect: HTMLSelectElement | null;
     private sortOrderButton: HTMLButtonElement | null;
-    private sortOrderText: HTMLSpanElement | null;
-    private sortOrderIcon: SVGElement | null;
-    private gridViewButton: HTMLButtonElement | null;
-    private listViewButton: HTMLButtonElement | null;
-    
+    private sortOrderIcon: HTMLElement | null;
     private currentOrder: 'asc' | 'desc' = 'asc';
-    private currentView: 'grid' | 'list' = 'grid';
 
     constructor() {
       this.sortBySelect = document.getElementById('sort-by') as HTMLSelectElement;
       this.sortOrderButton = document.getElementById('sort-order-toggle') as HTMLButtonElement;
-      this.sortOrderText = document.getElementById('sort-order-text') as HTMLSpanElement;
-      this.sortOrderIcon = document.getElementById('sort-order-icon') as SVGElement;
-      this.gridViewButton = document.getElementById('grid-view') as HTMLButtonElement;
-      this.listViewButton = document.getElementById('list-view') as HTMLButtonElement;
-
+      this.sortOrderIcon = document.getElementById('sort-order-icon') as HTMLElement;
       this.init();
     }
 
@@ -102,15 +54,6 @@
       this.sortOrderButton?.addEventListener('click', () => {
         this.toggleSortOrder();
       });
-
-      // View toggle events
-      this.gridViewButton?.addEventListener('click', () => {
-        this.setView('grid');
-      });
-
-      this.listViewButton?.addEventListener('click', () => {
-        this.setView('list');
-      });
     }
 
     private toggleSortOrder(): void {
@@ -120,43 +63,23 @@
     }
 
     private updateOrderButton(): void {
-      if (!this.sortOrderText || !this.sortOrderIcon || !this.sortOrderButton) return;
-
-      const sortBy = this.sortBySelect?.value || 'name';
+      if (!this.sortOrderIcon || !this.sortOrderButton) return;
 
       if (this.currentOrder === 'asc') {
-        this.sortOrderText.textContent = sortBy === 'name' ? 'A-Z' : 'Low-High';
-        this.sortOrderIcon.classList.remove('rotate-180');
+        this.sortOrderIcon.setAttribute('data-lucide', 'arrow-up');
       } else {
-        this.sortOrderText.textContent = sortBy === 'name' ? 'Z-A' : 'High-Low';
-        this.sortOrderIcon.classList.add('rotate-180');
+        this.sortOrderIcon.setAttribute('data-lucide', 'arrow-down');
       }
 
       this.sortOrderButton.setAttribute('data-order', this.currentOrder);
-    }
-
-    private setView(view: 'grid' | 'list'): void {
-      this.currentView = view;
-
-      // Update button states
-      if (view === 'grid') {
-        this.gridViewButton?.classList.add('bg-white', 'dark:bg-gray-800');
-        this.gridViewButton?.classList.remove('bg-gray-100', 'dark:bg-gray-700');
-        this.listViewButton?.classList.remove('bg-white', 'dark:bg-gray-800');
-        this.listViewButton?.classList.add('bg-gray-100', 'dark:bg-gray-700');
-      } else {
-        this.listViewButton?.classList.add('bg-white', 'dark:bg-gray-800');
-        this.listViewButton?.classList.remove('bg-gray-100', 'dark:bg-gray-700');
-        this.gridViewButton?.classList.remove('bg-white', 'dark:bg-gray-800');
-        this.gridViewButton?.classList.add('bg-gray-100', 'dark:bg-gray-700');
+      
+      // Re-initialize icons
+      if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
       }
-
-      this.dispatchViewEvent();
     }
 
     private dispatchSortEvent(): void {
-      this.updateOrderButton();
-      
       const event = new CustomEvent('sort-change', {
         detail: {
           sortBy: this.sortBySelect?.value || 'name',
@@ -165,17 +88,15 @@
       });
       document.dispatchEvent(event);
     }
-
-    private dispatchViewEvent(): void {
-      const event = new CustomEvent('view-change', {
-        detail: { view: this.currentView }
-      });
-      document.dispatchEvent(event);
-    }
   }
 
   // Initialize sorting controls when DOM is loaded
   document.addEventListener('DOMContentLoaded', () => {
     new SortingControls();
+    
+    // Initialize Lucide icons
+    if (typeof lucide !== 'undefined') {
+      lucide.createIcons();
+    }
   });
 </script>

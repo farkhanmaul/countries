@@ -18,19 +18,9 @@ let error = null;
   
   <main class="flex-1">
     <!-- Hero Section -->
-    <section class="bg-gradient-to-br from-primary-50 to-accent-50 dark:from-primary-900/20 dark:to-accent-900/20 py-12">
+    <section class="bg-gradient-to-br from-primary-50 to-accent-50 dark:from-primary-900/20 dark:to-accent-900/20 py-8">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center">
-          <h1 class="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
-            Explore the
-            <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary-600 to-accent-600">
-              World
-            </span>
-          </h1>
-          <p class="text-lg text-gray-600 dark:text-gray-300 mb-6 max-w-2xl mx-auto">
-            Discover countries worldwide with instant search and advanced filtering
-          </p>
-          
           <!-- Search Section -->
           <div class="max-w-2xl mx-auto">
             <SearchBar />
@@ -40,37 +30,51 @@ let error = null;
     </section>
 
     <!-- Filters and Controls -->
-    <section class="py-3 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 shadow-sm">
+    <section class="border-b border-gray-200 dark:border-gray-700">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <!-- Filter Controls -->
-        <div class="flex flex-wrap items-center justify-center gap-4 lg:gap-6">
-          <!-- Region Filter -->
-          <div class="min-w-0 flex-shrink-0">
-            <RegionFilter />
-          </div>
-          
-          <!-- Sorting Controls -->
-          <div class="min-w-0 flex-shrink-0">
-            <SortingControls />
-          </div>
-          
-          <!-- View Mode Toggle -->
-          <div class="min-w-0 flex-shrink-0">
-            <div class="flex rounded-lg border border-primary-200 dark:border-primary-700 p-1 bg-primary-50 dark:bg-primary-900/20">
-              <button 
-                id="view-grid" 
-                class="view-mode-btn active flex items-center justify-center px-3 py-2 rounded-md text-sm font-medium bg-white dark:bg-primary-800 text-primary-600 dark:text-primary-300 shadow-sm"
-              >
-                <i data-lucide="grid-3x3" class="w-4 h-4 mr-2"></i>
-                Grid
-              </button>
-              <button 
-                id="view-list" 
-                class="view-mode-btn flex items-center justify-center px-3 py-2 rounded-md text-sm font-medium text-primary-500 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-200"
-              >
-                <i data-lucide="list" class="w-4 h-4 mr-2"></i>
-                List
-              </button>
+        <!-- Filter Toggle Button -->
+        <div class="py-3 flex items-center justify-center">
+          <button 
+            id="filter-toggle-btn"
+            class="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400 bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-all duration-200"
+          >
+            <i data-lucide="sliders-horizontal" class="w-4 h-4"></i>
+            <span>Filters & Sort</span>
+            <i data-lucide="chevron-down" id="filter-chevron" class="w-4 h-4 transition-transform duration-200"></i>
+          </button>
+        </div>
+        
+        <!-- Collapsible Filter Controls -->
+        <div id="filter-controls" class="hidden pb-4">
+          <div class="flex flex-wrap items-center justify-center gap-4 lg:gap-6 pt-2 border-t border-gray-100 dark:border-gray-700">
+            <!-- Region Filter -->
+            <div class="min-w-0 flex-shrink-0">
+              <RegionFilter />
+            </div>
+            
+            <!-- Sorting Controls -->
+            <div class="min-w-0 flex-shrink-0">
+              <SortingControls />
+            </div>
+            
+            <!-- View Mode Toggle -->
+            <div class="min-w-0 flex-shrink-0">
+              <div class="flex rounded-lg border border-primary-200 dark:border-primary-700 p-1 bg-primary-50 dark:bg-primary-900/20">
+                <button 
+                  id="view-grid" 
+                  class="view-mode-btn active flex items-center justify-center px-3 py-2 rounded-md text-sm font-medium bg-white dark:bg-primary-800 text-primary-600 dark:text-primary-300 shadow-sm"
+                >
+                  <i data-lucide="grid-3x3" class="w-4 h-4 mr-2"></i>
+                  Grid
+                </button>
+                <button 
+                  id="view-list" 
+                  class="view-mode-btn flex items-center justify-center px-3 py-2 rounded-md text-sm font-medium text-primary-500 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-200"
+                >
+                  <i data-lucide="list" class="w-4 h-4 mr-2"></i>
+                  List
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -159,62 +163,30 @@ let error = null;
 
   <!-- Footer -->
   <footer class="bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-        <!-- Project Info -->
-        <div class="text-center md:text-left">
-          <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">🌍 Country Explorer</h3>
-          <p class="text-gray-600 dark:text-gray-400 text-sm">
-            A modern, fast, and beautiful web application for exploring countries around the world with detailed information and interactive features.
-          </p>
-        </div>
-        
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      <div class="flex flex-col sm:flex-row justify-between items-center gap-4 text-sm">
         <!-- Credits -->
-        <div class="text-center">
-          <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">👥 Credits</h3>
-          <div class="space-y-2 text-sm">
-            <p class="text-gray-600 dark:text-gray-400">
-              <span class="font-medium">Created by:</span> 
-              <a href="https://github.com/farkhanmaul" target="_blank" rel="noopener noreferrer" class="text-primary-600 dark:text-primary-400 hover:underline font-medium">
-                Farkhan Maul
-              </a>
-            </p>
-            <p class="text-gray-600 dark:text-gray-400">
-              <span class="font-medium">Built with:</span> 
-              <a href="https://claude.ai/code" target="_blank" rel="noopener noreferrer" class="text-primary-600 dark:text-primary-400 hover:underline">
-                Claude Code
-              </a>
-            </p>
-          </div>
+        <div class="flex items-center gap-4 text-gray-600 dark:text-gray-400">
+          <span>Created by</span>
+          <a href="https://github.com/farkhanmaul" target="_blank" rel="noopener noreferrer" class="text-primary-600 dark:text-primary-400 hover:underline font-medium">
+            Farkhan Maul
+          </a>
+          <span>•</span>
+          <span>Built with</span>
+          <a href="https://claude.ai/code" target="_blank" rel="noopener noreferrer" class="text-primary-600 dark:text-primary-400 hover:underline">
+            Claude Code
+          </a>
         </div>
         
-        <!-- Tech Stack -->
-        <div class="text-center md:text-right">
-          <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">⚡ Tech Stack</h3>
-          <div class="flex flex-wrap justify-center md:justify-end gap-2">
-            <span class="px-3 py-1 bg-gradient-to-r from-purple-500 to-pink-500 text-white text-xs rounded-full">Astro</span>
-            <span class="px-3 py-1 bg-gradient-to-r from-blue-500 to-cyan-500 text-white text-xs rounded-full">TypeScript</span>
-            <span class="px-3 py-1 bg-gradient-to-r from-green-500 to-emerald-500 text-white text-xs rounded-full">Tailwind CSS</span>
-            <span class="px-3 py-1 bg-gradient-to-r from-orange-500 to-red-500 text-white text-xs rounded-full">REST API</span>
-          </div>
-        </div>
-      </div>
-      
-      <!-- Bottom Bar -->
-      <div class="border-t border-gray-200 dark:border-gray-700 mt-8 pt-6 text-center">
-        <div class="flex flex-col sm:flex-row justify-between items-center gap-4">
-          <p class="text-sm text-gray-500 dark:text-gray-400">
-            © 2024 Country Explorer • Made with ❤️ for learning and exploration
-          </p>
-          <div class="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400">
-            <a href="https://restcountries.com" target="_blank" rel="noopener noreferrer" class="hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
-              REST Countries API
-            </a>
-            <span>•</span>
-            <a href="https://github.com/farkhanmaul/countries" target="_blank" rel="noopener noreferrer" class="hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
-              GitHub
-            </a>
-          </div>
+        <!-- Links -->
+        <div class="flex items-center gap-4 text-gray-500 dark:text-gray-400">
+          <a href="https://restcountries.com" target="_blank" rel="noopener noreferrer" class="hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
+            API
+          </a>
+          <span>•</span>
+          <a href="https://github.com/farkhanmaul/countries" target="_blank" rel="noopener noreferrer" class="hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
+            GitHub
+          </a>
         </div>
       </div>
     </div>
@@ -294,6 +266,12 @@ let error = null;
         this.renderCountries();
       });
 
+      // Filter toggle
+      const filterToggleBtn = document.getElementById('filter-toggle-btn');
+      filterToggleBtn?.addEventListener('click', () => {
+        this.toggleFilters();
+      });
+
       // View mode buttons
       const viewGridBtn = document.getElementById('view-grid');
       const viewListBtn = document.getElementById('view-list');
@@ -311,6 +289,23 @@ let error = null;
       retryBtn?.addEventListener('click', () => {
         this.loadAllCountries();
       });
+    }
+
+    private toggleFilters(): void {
+      const filterControls = document.getElementById('filter-controls');
+      const filterChevron = document.getElementById('filter-chevron');
+      
+      if (!filterControls || !filterChevron) return;
+
+      const isHidden = filterControls.classList.contains('hidden');
+      
+      if (isHidden) {
+        filterControls.classList.remove('hidden');
+        filterChevron.style.transform = 'rotate(180deg)';
+      } else {
+        filterControls.classList.add('hidden');
+        filterChevron.style.transform = 'rotate(0deg)';
+      }
     }
 
     private handleViewModeChange(viewMode: 'grid' | 'list'): void {

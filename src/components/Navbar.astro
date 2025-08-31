@@ -17,80 +17,15 @@
 
       <!-- Navigation Menu & Dark Mode Toggle -->
       <div class="flex items-center space-x-4">
-        <!-- Advanced Search Menu -->
-        <div class="relative">
-          <button 
-            id="advanced-search-btn"
-            type="button"
-            class="flex items-center px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-all duration-200"
-          >
-            <i data-lucide="search" class="w-4 h-4 mr-2"></i>
-            Advanced Search
-            <i data-lucide="chevron-down" class="w-4 h-4 ml-1"></i>
-          </button>
-          
-          <!-- Dropdown Menu -->
-          <div 
-            id="advanced-search-dropdown"
-            class="absolute right-0 mt-2 w-64 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-600 hidden z-50"
-          >
-            <div class="p-4">
-              <p class="text-sm font-medium text-gray-900 dark:text-white mb-3">Search by:</p>
-              <div class="space-y-2">
-                <button 
-                  data-search-type="name" 
-                  class="advanced-search-option w-full flex items-center px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors active"
-                >
-                  <i data-lucide="flag" class="w-4 h-4 mr-3 text-primary-500"></i>
-                  <div class="text-left">
-                    <div class="font-medium">Country Name</div>
-                    <div class="text-xs text-gray-500 dark:text-gray-400">Default search</div>
-                  </div>
-                </button>
-                <button 
-                  data-search-type="capital" 
-                  class="advanced-search-option w-full flex items-center px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
-                >
-                  <i data-lucide="landmark" class="w-4 h-4 mr-3 text-primary-500"></i>
-                  <div class="text-left">
-                    <div class="font-medium">Capital City</div>
-                    <div class="text-xs text-gray-500 dark:text-gray-400">e.g., Jakarta, London</div>
-                  </div>
-                </button>
-                <button 
-                  data-search-type="currency" 
-                  class="advanced-search-option w-full flex items-center px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
-                >
-                  <i data-lucide="coins" class="w-4 h-4 mr-3 text-primary-500"></i>
-                  <div class="text-left">
-                    <div class="font-medium">Currency</div>
-                    <div class="text-xs text-gray-500 dark:text-gray-400">e.g., USD, Euro</div>
-                  </div>
-                </button>
-                <button 
-                  data-search-type="language" 
-                  class="advanced-search-option w-full flex items-center px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
-                >
-                  <i data-lucide="languages" class="w-4 h-4 mr-3 text-primary-500"></i>
-                  <div class="text-left">
-                    <div class="font-medium">Language</div>
-                    <div class="text-xs text-gray-500 dark:text-gray-400">e.g., English, Spanish</div>
-                  </div>
-                </button>
-                <button 
-                  data-search-type="demonym" 
-                  class="advanced-search-option w-full flex items-center px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
-                >
-                  <i data-lucide="users" class="w-4 h-4 mr-3 text-primary-500"></i>
-                  <div class="text-left">
-                    <div class="font-medium">People</div>
-                    <div class="text-xs text-gray-500 dark:text-gray-400">e.g., Indonesian, American</div>
-                  </div>
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
+        <!-- Quiz Menu -->
+        <button 
+          id="quiz-btn"
+          type="button"
+          class="flex items-center px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-all duration-200"
+        >
+          <i data-lucide="brain" class="w-4 h-4 mr-2"></i>
+          Quiz
+        </button>
         <button 
           id="theme-toggle"
           type="button"
@@ -132,13 +67,10 @@
   import { initializeTheme, toggleTheme } from '../utils/theme';
 
   class Navbar {
-    private currentSearchType: string = 'name';
-    private dropdown: HTMLElement | null;
-    private dropdownButton: HTMLElement | null;
+    private quizButton: HTMLElement | null;
 
     constructor() {
-      this.dropdown = document.getElementById('advanced-search-dropdown');
-      this.dropdownButton = document.getElementById('advanced-search-btn');
+      this.quizButton = document.getElementById('quiz-btn');
       this.init();
     }
 
@@ -152,84 +84,22 @@
         themeToggle.addEventListener('click', toggleTheme);
       }
 
-      // Advanced search dropdown
-      this.setupAdvancedSearch();
+      // Quiz button
+      this.setupQuiz();
     }
 
-    private setupAdvancedSearch(): void {
-      if (!this.dropdown || !this.dropdownButton) return;
+    private setupQuiz(): void {
+      if (!this.quizButton) return;
 
-      // Toggle dropdown
-      this.dropdownButton.addEventListener('click', (e) => {
-        e.stopPropagation();
-        this.toggleDropdown();
-      });
-
-      // Close dropdown when clicking outside
-      document.addEventListener('click', (e) => {
-        if (!this.dropdown?.contains(e.target as Node) && 
-            !this.dropdownButton?.contains(e.target as Node)) {
-          this.closeDropdown();
-        }
-      });
-
-      // Handle search type selection
-      const searchOptions = document.querySelectorAll('.advanced-search-option');
-      searchOptions.forEach(option => {
-        option.addEventListener('click', (e) => {
-          e.preventDefault();
-          const searchType = (option as HTMLElement).dataset.searchType;
-          if (searchType) {
-            this.selectSearchType(searchType);
-          }
-        });
+      this.quizButton.addEventListener('click', () => {
+        this.startQuiz();
       });
     }
 
-    private toggleDropdown(): void {
-      if (!this.dropdown) return;
-      
-      const isHidden = this.dropdown.classList.contains('hidden');
-      if (isHidden) {
-        this.dropdown.classList.remove('hidden');
-        this.dropdown.classList.add('animate-in', 'fade-in-0', 'zoom-in-95');
-      } else {
-        this.closeDropdown();
-      }
-    }
-
-    private closeDropdown(): void {
-      if (!this.dropdown) return;
-      this.dropdown.classList.add('hidden');
-      this.dropdown.classList.remove('animate-in', 'fade-in-0', 'zoom-in-95');
-    }
-
-    private selectSearchType(searchType: string): void {
-      this.currentSearchType = searchType;
-
-      // Update active state
-      const options = document.querySelectorAll('.advanced-search-option');
-      options.forEach(option => {
-        const optionElement = option as HTMLElement;
-        if (optionElement.dataset.searchType === searchType) {
-          optionElement.classList.add('active', 'bg-primary-50', 'dark:bg-primary-900/20', 'text-primary-700', 'dark:text-primary-300');
-        } else {
-          optionElement.classList.remove('active', 'bg-primary-50', 'dark:bg-primary-900/20', 'text-primary-700', 'dark:text-primary-300');
-        }
-      });
-
-      // Dispatch event to update search bar
-      const event = new CustomEvent('search-type-changed', {
-        detail: { searchType }
-      });
+    private startQuiz(): void {
+      // Dispatch event to start quiz
+      const event = new CustomEvent('quiz-start');
       document.dispatchEvent(event);
-
-      // Close dropdown
-      this.closeDropdown();
-    }
-
-    public getCurrentSearchType(): string {
-      return this.currentSearchType;
     }
   }
 
