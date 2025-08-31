@@ -54,20 +54,17 @@ const { countries, viewMode = 'grid', loading = false } = Astro.props;
 )}
 
 <!-- Countries Grid/List -->
-{!loading && countries.length > 0 && (
-  <div 
-    id="countries-container"
-    class={`transition-all duration-300 ${
-      viewMode === 'grid' 
-        ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6' 
-        : 'space-y-4'
-    }`}
-  >
-    {countries.map((country) => (
-      <CountryCard country={country} viewMode={viewMode} />
-    ))}
-  </div>
-)}
+<div 
+  class={`transition-all duration-300 ${
+    viewMode === 'grid' 
+      ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6' 
+      : 'space-y-4'
+  }`}
+>
+  {countries.map((country) => (
+    <CountryCard country={country} viewMode={viewMode} />
+  ))}
+</div>
 
 <!-- Pagination (placeholder for future implementation) -->
 <div id="pagination-container" class="mt-8 flex justify-center">

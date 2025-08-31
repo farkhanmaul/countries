@@ -72,3 +72,103 @@ export async function fetchCountriesByRegion(region: string): Promise<Country[]>
     throw error;
   }
 }
+
+export async function fetchCountriesByCurrency(currency: string): Promise<Country[]> {
+  const strategies = [
+    () => fetch(`${BASE_URL}/currency/${encodeURIComponent(currency)}`),
+    () => fetch(`https://restcountries.com/v3/currency/${encodeURIComponent(currency)}`),
+  ];
+
+  for (let i = 0; i < strategies.length; i++) {
+    try {
+      const response = await strategies[i]();
+      if (response.ok) {
+        return await response.json();
+      }
+    } catch (error) {
+      console.warn(`Currency search strategy ${i + 1} failed:`, error);
+    }
+  }
+  
+  throw new Error(`Failed to fetch countries by currency: ${currency}`);
+}
+
+export async function fetchCountriesByLanguage(language: string): Promise<Country[]> {
+  const strategies = [
+    () => fetch(`${BASE_URL}/lang/${encodeURIComponent(language)}`),
+    () => fetch(`https://restcountries.com/v3/lang/${encodeURIComponent(language)}`),
+  ];
+
+  for (let i = 0; i < strategies.length; i++) {
+    try {
+      const response = await strategies[i]();
+      if (response.ok) {
+        return await response.json();
+      }
+    } catch (error) {
+      console.warn(`Language search strategy ${i + 1} failed:`, error);
+    }
+  }
+  
+  throw new Error(`Failed to fetch countries by language: ${language}`);
+}
+
+export async function fetchCountriesByCapital(capital: string): Promise<Country[]> {
+  const strategies = [
+    () => fetch(`${BASE_URL}/capital/${encodeURIComponent(capital)}`),
+    () => fetch(`https://restcountries.com/v3/capital/${encodeURIComponent(capital)}`),
+  ];
+
+  for (let i = 0; i < strategies.length; i++) {
+    try {
+      const response = await strategies[i]();
+      if (response.ok) {
+        return await response.json();
+      }
+    } catch (error) {
+      console.warn(`Capital search strategy ${i + 1} failed:`, error);
+    }
+  }
+  
+  throw new Error(`Failed to fetch countries by capital: ${capital}`);
+}
+
+export async function fetchCountriesByDemonym(demonym: string): Promise<Country[]> {
+  const strategies = [
+    () => fetch(`${BASE_URL}/demonym/${encodeURIComponent(demonym)}`),
+    () => fetch(`https://restcountries.com/v3/demonym/${encodeURIComponent(demonym)}`),
+  ];
+
+  for (let i = 0; i < strategies.length; i++) {
+    try {
+      const response = await strategies[i]();
+      if (response.ok) {
+        return await response.json();
+      }
+    } catch (error) {
+      console.warn(`Demonym search strategy ${i + 1} failed:`, error);
+    }
+  }
+  
+  throw new Error(`Failed to fetch countries by demonym: ${demonym}`);
+}
+
+export async function fetchIndependentCountries(independent: boolean = true): Promise<Country[]> {
+  const strategies = [
+    () => fetch(`${BASE_URL}/independent?status=${independent}`),
+    () => fetch(`https://restcountries.com/v3/independent?status=${independent}`),
+  ];
+
+  for (let i = 0; i < strategies.length; i++) {
+    try {
+      const response = await strategies[i]();
+      if (response.ok) {
+        return await response.json();
+      }
+    } catch (error) {
+      console.warn(`Independent countries strategy ${i + 1} failed:`, error);
+    }
+  }
+  
+  throw new Error(`Failed to fetch independent countries`);
+}

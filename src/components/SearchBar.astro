@@ -2,7 +2,26 @@
 // No server-side logic needed for the search bar
 ---
 
-<div class="relative max-w-md mx-auto">
+<div class="relative max-w-2xl mx-auto">
+  <!-- Search Type Selector -->
+  <div class="flex flex-wrap gap-2 mb-4 justify-center">
+    <button id="search-type-name" class="search-type-btn active px-3 py-1 text-sm rounded-full border border-primary-500 bg-primary-500 text-white">
+      🏳️ Country
+    </button>
+    <button id="search-type-capital" class="search-type-btn px-3 py-1 text-sm rounded-full border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:border-primary-500">
+      🏛️ Capital
+    </button>
+    <button id="search-type-currency" class="search-type-btn px-3 py-1 text-sm rounded-full border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:border-primary-500">
+      💰 Currency
+    </button>
+    <button id="search-type-language" class="search-type-btn px-3 py-1 text-sm rounded-full border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:border-primary-500">
+      🗣️ Language
+    </button>
+    <button id="search-type-demonym" class="search-type-btn px-3 py-1 text-sm rounded-full border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:border-primary-500">
+      👥 People
+    </button>
+  </div>
+
   <div class="relative">
     <!-- Search Icon -->
     <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
@@ -26,22 +45,39 @@
       id="search-input"
       type="search"
       placeholder="Search for a country..."
-      class="w-full pl-10 pr-4 py-3 text-gray-900 dark:text-white bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:focus:ring-primary-400 dark:focus:border-primary-400 transition-colors duration-200"
+      class="w-full pl-10 pr-16 py-3 text-gray-900 dark:text-white bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:focus:ring-primary-400 dark:focus:border-primary-400 transition-colors duration-200"
       autocomplete="off"
     />
     
-    <!-- Clear Button -->
-    <button
-      id="clear-search"
-      type="button"
-      class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 opacity-0 pointer-events-none transition-opacity duration-200"
-      aria-label="Clear search"
-    >
-      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-      </svg>
-    </button>
+    <!-- Search Button & Clear Button -->
+    <div class="absolute inset-y-0 right-0 flex items-center pr-2">
+      <button
+        id="clear-search"
+        type="button"
+        class="p-1 mr-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 opacity-0 pointer-events-none transition-opacity duration-200 rounded"
+        aria-label="Clear search"
+      >
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+      </button>
+      <button
+        id="search-button"
+        type="button"
+        class="p-1 text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300 transition-colors duration-200 rounded"
+        aria-label="Search"
+      >
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m21 21-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+        </svg>
+      </button>
+    </div>
   </div>
+  
+  <!-- Search Type Description -->
+  <p id="search-description" class="text-xs text-gray-500 dark:text-gray-400 mt-2 text-center">
+    Search by country name (e.g., "Indonesia", "United States")
+  </p>
   
   <!-- Search suggestions (will be populated via JS) -->
   <div 
@@ -58,17 +94,29 @@
     private clearButton: HTMLButtonElement | null;
     private suggestions: HTMLDivElement | null;
     private debounceTimer: number | null = null;
+    private currentSearchType: string = 'name';
+    private searchTypeButtons: NodeListOf<HTMLButtonElement>;
+    private searchDescription: HTMLElement | null;
 
     constructor() {
       this.searchInput = document.getElementById('search-input') as HTMLInputElement;
       this.clearButton = document.getElementById('clear-search') as HTMLButtonElement;
       this.suggestions = document.getElementById('search-suggestions') as HTMLDivElement;
+      this.searchTypeButtons = document.querySelectorAll('.search-type-btn');
+      this.searchDescription = document.getElementById('search-description');
       
       this.init();
     }
 
     private init(): void {
       if (!this.searchInput || !this.clearButton) return;
+
+      // Handle search type buttons
+      this.searchTypeButtons.forEach(button => {
+        button.addEventListener('click', () => {
+          this.handleSearchTypeChange(button.id.replace('search-type-', ''));
+        });
+      });
 
       // Handle input events
       this.searchInput.addEventListener('input', (e) => {
@@ -100,7 +148,10 @@
       this.searchInput.addEventListener('input', (e) => {
         const target = e.target as HTMLInputElement;
         const event = new CustomEvent('country-search', {
-          detail: { query: target.value.trim() }
+          detail: { 
+            query: target.value.trim(),
+            searchType: this.currentSearchType
+          }
         });
         document.dispatchEvent(event);
       });
@@ -147,7 +198,10 @@
       
       // Dispatch clear event
       const event = new CustomEvent('country-search', {
-        detail: { query: '' }
+        detail: { 
+          query: '',
+          searchType: this.currentSearchType
+        }
       });
       document.dispatchEvent(event);
     }
@@ -181,13 +235,80 @@
           this.hideSuggestions();
           
           const event = new CustomEvent('country-search', {
-            detail: { query: country }
+            detail: { 
+              query: country,
+              searchType: this.currentSearchType
+            }
           });
           document.dispatchEvent(event);
         });
 
         this.suggestions.appendChild(suggestion);
       });
+    }
+
+    private handleSearchTypeChange(searchType: string): void {
+      // Update current search type
+      this.currentSearchType = searchType;
+      
+      // Update button states
+      this.searchTypeButtons.forEach(button => {
+        if (button.id === `search-type-${searchType}`) {
+          button.classList.add('active', 'bg-primary-500', 'text-white');
+          button.classList.remove('text-gray-700', 'dark:text-gray-300', 'border-gray-300', 'dark:border-gray-600');
+        } else {
+          button.classList.remove('active', 'bg-primary-500', 'text-white');
+          button.classList.add('text-gray-700', 'dark:text-gray-300', 'border-gray-300', 'dark:border-gray-600');
+        }
+      });
+
+      // Update placeholder and description
+      this.updateSearchPlaceholder(searchType);
+      
+      // Clear current search and trigger new search if there's a value
+      const currentValue = this.searchInput?.value || '';
+      if (currentValue.trim()) {
+        const event = new CustomEvent('country-search', {
+          detail: { 
+            query: currentValue.trim(),
+            searchType: this.currentSearchType
+          }
+        });
+        document.dispatchEvent(event);
+      }
+    }
+
+    private updateSearchPlaceholder(searchType: string): void {
+      if (!this.searchInput || !this.searchDescription) return;
+
+      const searchConfigs = {
+        name: {
+          placeholder: 'Search for a country...',
+          description: 'Search by country name (e.g., "Indonesia", "United States")'
+        },
+        capital: {
+          placeholder: 'Search by capital city...',
+          description: 'Search by capital city (e.g., "Jakarta", "Washington")'
+        },
+        currency: {
+          placeholder: 'Search by currency...',
+          description: 'Search by currency (e.g., "USD", "Euro", "Rupiah")'
+        },
+        language: {
+          placeholder: 'Search by language...',
+          description: 'Search by language (e.g., "English", "Spanish", "Indonesian")'
+        },
+        demonym: {
+          placeholder: 'Search by people...',
+          description: 'Search by what people are called (e.g., "Indonesian", "American")'
+        }
+      };
+
+      const config = searchConfigs[searchType as keyof typeof searchConfigs];
+      if (config) {
+        this.searchInput.placeholder = config.placeholder;
+        this.searchDescription.textContent = config.description;
+      }
     }
   }
 

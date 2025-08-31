@@ -8,16 +8,9 @@ import CountryGrid from '../components/CountryGrid.astro';
 import CountryModal from '../components/CountryModal.astro';
 import { fetchAllCountries } from '../utils/api';
 
-// Fetch initial countries data
+// Don't fetch countries initially - let user trigger the search
 let countries = [];
 let error = null;
-
-try {
-  countries = await fetchAllCountries();
-} catch (e) {
-  error = e instanceof Error ? e.message : 'Failed to load countries';
-  console.error('Error loading countries:', e);
-}
 ---
 
 <Layout title="Country Explorer - Discover Countries Around the World">
@@ -69,79 +62,140 @@ try {
     <!-- Countries Section -->
     <section class="py-8">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <!-- API Status Banner -->
-        {countries.length === 8 && (
-          <div class="mb-6 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4">
-            <div class="flex items-center">
-              <svg class="w-5 h-5 text-yellow-600 dark:text-yellow-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 15.5c-.77.833.192 2.5 1.732 2.5z"></path>
-              </svg>
-              <div>
-                <p class="text-sm font-medium text-yellow-800 dark:text-yellow-200">
-                  API Temporarily Unavailable
-                </p>
-                <p class="text-sm text-yellow-700 dark:text-yellow-300">
-                  Showing sample countries. Full data will load when API is restored.
-                </p>
-              </div>
+        <!-- Welcome Message -->
+        <div id="welcome-message" class="text-center py-20">
+          <div class="mx-auto w-24 h-24 text-primary-500 dark:text-primary-400 mb-6">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+          </div>
+          <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">Welcome to Country Explorer!</h3>
+          <p class="text-lg text-gray-600 dark:text-gray-400 mb-6 max-w-2xl mx-auto">
+            Start your journey by searching for a country, filtering by region, or browse all countries to discover fascinating information about nations around the world.
+          </p>
+          <button 
+            id="load-all-countries" 
+            class="px-6 py-3 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors duration-200 font-medium"
+          >
+            🌍 Explore All Countries
+          </button>
+        </div>
+
+        <!-- API Status Banner (hidden initially) -->
+        <div id="api-status-banner" class="hidden mb-6 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4">
+          <div class="flex items-center">
+            <svg class="w-5 h-5 text-yellow-600 dark:text-yellow-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 15.5c-.77.833.192 2.5 1.732 2.5z"></path>
+            </svg>
+            <div>
+              <p class="text-sm font-medium text-yellow-800 dark:text-yellow-200">
+                API Temporarily Unavailable
+              </p>
+              <p class="text-sm text-yellow-700 dark:text-yellow-300">
+                Showing sample countries. Full data will load when API is restored.
+              </p>
             </div>
           </div>
-        )}
+        </div>
 
-        <!-- Results Info -->
-        <div id="results-info" class="mb-6">
+        <!-- Results Info (hidden initially) -->
+        <div id="results-info" class="hidden mb-6">
           <p class="text-gray-600 dark:text-gray-400">
-            {error ? (
-              <span class="text-red-600 dark:text-red-400">Error: {error}</span>
-            ) : (
-              <span>Showing <strong id="results-count">{countries.length}</strong> countries
-                {countries.length === 8 && <span class="text-yellow-600 dark:text-yellow-400"> (sample data)</span>}
-              </span>
-            )}
+            Showing <strong id="results-count">0</strong> countries
+            <span id="sample-data-indicator" class="hidden text-yellow-600 dark:text-yellow-400"> (sample data)</span>
           </p>
         </div>
 
-        <!-- Countries Grid -->
-        {error ? (
-          <div class="text-center py-20">
-            <div class="mx-auto w-24 h-24 text-red-500 mb-4">
-              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-              </svg>
-            </div>
-            <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">Failed to load countries</h3>
-            <p class="text-gray-500 dark:text-gray-400 mb-4">{error}</p>
-            <button 
-              onclick="window.location.reload()" 
-              class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors duration-200"
-            >
-              Try Again
-            </button>
+        <!-- Countries Grid (hidden initially) -->
+        <div id="countries-container" class="hidden">
+          <CountryGrid countries={[]} />
+        </div>
+
+        <!-- Loading State -->
+        <div id="loading-state" class="hidden text-center py-20">
+          <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto mb-4"></div>
+          <p class="text-gray-600 dark:text-gray-400">Loading countries...</p>
+        </div>
+
+        <!-- Error State -->
+        <div id="error-state" class="hidden text-center py-20">
+          <div class="mx-auto w-24 h-24 text-red-500 mb-4">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
           </div>
-        ) : (
-          <CountryGrid countries={countries} />
-        )}
+          <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">Failed to load countries</h3>
+          <p id="error-message" class="text-gray-500 dark:text-gray-400 mb-4"></p>
+          <button 
+            id="retry-button"
+            class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors duration-200"
+          >
+            Try Again
+          </button>
+        </div>
       </div>
     </section>
   </main>
 
   <!-- Footer -->
   <footer class="bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <div class="text-center">
-        <p class="text-gray-600 dark:text-gray-400">
-          Built with ❤️ using 
-          <a href="https://astro.build" target="_blank" rel="noopener noreferrer" class="text-primary-600 dark:text-primary-400 hover:underline">
-            Astro
-          </a>
-          and 
-          <a href="https://restcountries.com" target="_blank" rel="noopener noreferrer" class="text-primary-600 dark:text-primary-400 hover:underline">
-            REST Countries API
-          </a>
-        </p>
-        <p class="text-sm text-gray-500 dark:text-gray-500 mt-2">
-          © 2024 Country Explorer. Made for learning and exploration.
-        </p>
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <!-- Project Info -->
+        <div class="text-center md:text-left">
+          <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">🌍 Country Explorer</h3>
+          <p class="text-gray-600 dark:text-gray-400 text-sm">
+            A modern, fast, and beautiful web application for exploring countries around the world with detailed information and interactive features.
+          </p>
+        </div>
+        
+        <!-- Credits -->
+        <div class="text-center">
+          <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">👥 Credits</h3>
+          <div class="space-y-2 text-sm">
+            <p class="text-gray-600 dark:text-gray-400">
+              <span class="font-medium">Created by:</span> 
+              <a href="https://github.com/farkhanmaul" target="_blank" rel="noopener noreferrer" class="text-primary-600 dark:text-primary-400 hover:underline font-medium">
+                Farkhan Maul
+              </a>
+            </p>
+            <p class="text-gray-600 dark:text-gray-400">
+              <span class="font-medium">Built with:</span> 
+              <a href="https://claude.ai/code" target="_blank" rel="noopener noreferrer" class="text-primary-600 dark:text-primary-400 hover:underline">
+                Claude Code
+              </a>
+            </p>
+          </div>
+        </div>
+        
+        <!-- Tech Stack -->
+        <div class="text-center md:text-right">
+          <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">⚡ Tech Stack</h3>
+          <div class="flex flex-wrap justify-center md:justify-end gap-2">
+            <span class="px-3 py-1 bg-gradient-to-r from-purple-500 to-pink-500 text-white text-xs rounded-full">Astro</span>
+            <span class="px-3 py-1 bg-gradient-to-r from-blue-500 to-cyan-500 text-white text-xs rounded-full">TypeScript</span>
+            <span class="px-3 py-1 bg-gradient-to-r from-green-500 to-emerald-500 text-white text-xs rounded-full">Tailwind CSS</span>
+            <span class="px-3 py-1 bg-gradient-to-r from-orange-500 to-red-500 text-white text-xs rounded-full">REST API</span>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Bottom Bar -->
+      <div class="border-t border-gray-200 dark:border-gray-700 mt-8 pt-6 text-center">
+        <div class="flex flex-col sm:flex-row justify-between items-center gap-4">
+          <p class="text-sm text-gray-500 dark:text-gray-400">
+            © 2024 Country Explorer • Made with ❤️ for learning and exploration
+          </p>
+          <div class="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400">
+            <a href="https://restcountries.com" target="_blank" rel="noopener noreferrer" class="hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
+              REST Countries API
+            </a>
+            <span>•</span>
+            <a href="https://github.com/farkhanmaul/countries" target="_blank" rel="noopener noreferrer" class="hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
+              GitHub
+            </a>
+          </div>
+        </div>
       </div>
     </div>
   </footer>
@@ -150,7 +204,464 @@ try {
   <CountryModal />
 </Layout>
 
-<!-- Pass server-side data to client-side -->
-<script define:vars={{ countries }}>
-  window.__INITIAL_COUNTRIES__ = countries;
+<!-- Main Application Script -->
+<script>
+  import { 
+    fetchAllCountries, 
+    fetchCountryByName, 
+    fetchCountriesByRegion, 
+    fetchCountriesByCurrency, 
+    fetchCountriesByLanguage, 
+    fetchCountriesByCapital, 
+    fetchCountriesByDemonym,
+    fetchIndependentCountries 
+  } from '../utils/api';
+  import type { Country, FilterOptions } from '../types/country';
+
+  class CountryExplorer {
+    private allCountries: Country[] = [];
+    private filteredCountries: Country[] = [];
+    private currentFilters: FilterOptions = {
+      search: '',
+      region: '',
+      sortBy: 'name',
+      sortOrder: 'asc'
+    };
+    private currentViewMode: 'grid' | 'list' = 'grid';
+    private isLoading: boolean = false;
+
+    constructor() {
+      this.init();
+    }
+
+    private async init(): Promise<void> {
+      this.setupEventListeners();
+    }
+
+    private setupEventListeners(): void {
+      // Load all countries button
+      const loadAllBtn = document.getElementById('load-all-countries');
+      loadAllBtn?.addEventListener('click', () => {
+        this.loadAllCountries();
+      });
+
+      // Search events
+      document.addEventListener('country-search', (e: Event) => {
+        const customEvent = e as CustomEvent;
+        this.handleSearch(customEvent.detail.query, customEvent.detail.searchType);
+      });
+
+      // Region filter events
+      document.addEventListener('region-filter', (e: Event) => {
+        const customEvent = e as CustomEvent;
+        this.currentFilters.region = customEvent.detail.region;
+        this.applyFilters();
+      });
+
+      // Sort events
+      document.addEventListener('sort-change', (e: Event) => {
+        const customEvent = e as CustomEvent;
+        this.currentFilters.sortBy = customEvent.detail.sortBy;
+        this.currentFilters.sortOrder = customEvent.detail.order;
+        this.applyFilters();
+      });
+
+      // View mode events
+      document.addEventListener('view-change', (e: Event) => {
+        const customEvent = e as CustomEvent;
+        this.currentViewMode = customEvent.detail.view;
+        this.renderCountries();
+      });
+
+      // Retry button
+      const retryBtn = document.getElementById('retry-button');
+      retryBtn?.addEventListener('click', () => {
+        this.loadAllCountries();
+      });
+    }
+
+    private async loadAllCountries(): Promise<void> {
+      if (this.isLoading) return;
+
+      this.showLoadingState();
+      this.isLoading = true;
+
+      try {
+        this.allCountries = await fetchAllCountries();
+        this.filteredCountries = [...this.allCountries];
+        
+        // Check if using fallback data
+        if (this.allCountries.length === 8) {
+          this.showApiFallbackBanner();
+        }
+        
+        this.hideWelcomeMessage();
+        this.renderCountries();
+        this.updateResultsCount();
+        this.hideLoadingState();
+        this.showResults();
+      } catch (error) {
+        this.showErrorState(error instanceof Error ? error.message : 'Failed to load countries');
+      } finally {
+        this.isLoading = false;
+      }
+    }
+
+    private async handleSearch(query: string, searchType: string = 'name'): Promise<void> {
+      this.currentFilters.search = query;
+
+      if (!query.trim()) {
+        // If search is empty, show all countries or current filtered results
+        if (this.allCountries.length === 0) {
+          await this.loadAllCountries();
+        } else {
+          this.applyFilters();
+        }
+        return;
+      }
+
+      // Show loading state
+      this.setLoading(true);
+
+      try {
+        // If using advanced search types, fetch specific data
+        if (searchType !== 'name') {
+          await this.handleAdvancedSearch(query, searchType);
+        } else {
+          // Default name search
+          if (this.allCountries.length === 0) {
+            await this.loadAllCountries();
+          }
+          this.applyFilters();
+        }
+      } catch (error) {
+        console.error('Search error:', error);
+        this.showErrorState('Search failed. Please try again.');
+      } finally {
+        this.setLoading(false);
+      }
+    }
+
+    private async handleAdvancedSearch(query: string, searchType: string): Promise<void> {
+      try {
+        let searchResults: Country[] = [];
+
+        switch (searchType) {
+          case 'capital':
+            searchResults = await fetchCountriesByCapital(query);
+            break;
+          case 'currency':
+            searchResults = await fetchCountriesByCurrency(query);
+            break;
+          case 'language':
+            searchResults = await fetchCountriesByLanguage(query);
+            break;
+          case 'demonym':
+            searchResults = await fetchCountriesByDemonym(query);
+            break;
+          default:
+            // Fallback to regular name search
+            if (this.allCountries.length === 0) {
+              await this.loadAllCountries();
+            }
+            this.applyFilters();
+            return;
+        }
+
+        // Update filtered countries with search results
+        this.filteredCountries = searchResults.sort((a, b) => a.name.common.localeCompare(b.name.common));
+        this.hideWelcomeMessage();
+        this.renderCountries();
+        this.updateResultsCount();
+        this.showResults();
+
+      } catch (error) {
+        console.error(`Advanced search (${searchType}) failed:`, error);
+        this.showErrorState(`No results found for "${query}" in ${searchType}.`);
+      }
+    }
+
+    private applyFilters(): void {
+      let filtered = [...this.allCountries];
+
+      // Apply search filter
+      if (this.currentFilters.search) {
+        const searchTerm = this.currentFilters.search.toLowerCase();
+        filtered = filtered.filter(country => 
+          country.name.common.toLowerCase().includes(searchTerm) ||
+          country.name.official.toLowerCase().includes(searchTerm) ||
+          (country.capital && country.capital.some(cap => 
+            cap.toLowerCase().includes(searchTerm)
+          )) ||
+          (country.region && country.region.toLowerCase().includes(searchTerm)) ||
+          (country.subregion && country.subregion.toLowerCase().includes(searchTerm))
+        );
+      }
+
+      // Apply region filter
+      if (this.currentFilters.region) {
+        filtered = filtered.filter(country => 
+          country.region === this.currentFilters.region
+        );
+      }
+
+      // Apply sorting
+      filtered.sort((a, b) => {
+        let comparison = 0;
+        
+        switch (this.currentFilters.sortBy) {
+          case 'name':
+            comparison = a.name.common.localeCompare(b.name.common);
+            break;
+          case 'population':
+            comparison = a.population - b.population;
+            break;
+          case 'area':
+            comparison = a.area - b.area;
+            break;
+        }
+
+        return this.currentFilters.sortOrder === 'desc' ? -comparison : comparison;
+      });
+
+      this.filteredCountries = filtered;
+      this.hideWelcomeMessage();
+      this.renderCountries();
+      this.updateResultsCount();
+      this.showResults();
+    }
+
+    private renderCountries(): void {
+      const container = document.getElementById('countries-container');
+      if (!container) return;
+
+      // Update view mode classes
+      const isGridView = this.currentViewMode === 'grid';
+      const gridContainer = container.querySelector('.grid, .space-y-4');
+      
+      if (gridContainer) {
+        gridContainer.className = `transition-all duration-300 ${
+          isGridView 
+            ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6' 
+            : 'space-y-4'
+        }`;
+      }
+
+      // Clear and repopulate
+      const existingGrid = container.querySelector('.grid, .space-y-4');
+      if (existingGrid) {
+        existingGrid.innerHTML = '';
+        
+        if (this.filteredCountries.length === 0) {
+          this.showNoResultsState();
+          return;
+        }
+
+        this.filteredCountries.forEach((country, index) => {
+          const countryElement = this.createCountryCard(country, this.currentViewMode);
+          countryElement.style.opacity = '0';
+          countryElement.style.transform = 'translateY(20px)';
+          
+          existingGrid.appendChild(countryElement);
+          
+          // Animate entry
+          setTimeout(() => {
+            countryElement.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+            countryElement.style.opacity = '1';
+            countryElement.style.transform = 'translateY(0)';
+          }, index * 50);
+        });
+      }
+    }
+
+    private createCountryCard(country: Country, viewMode: 'grid' | 'list'): HTMLElement {
+      const card = document.createElement('div');
+      
+      card.className = `country-card bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 cursor-pointer group border border-gray-200 dark:border-gray-700 hover:border-primary-500 dark:hover:border-primary-400 ${
+        viewMode === 'list' 
+          ? 'flex items-center p-4 space-x-4' 
+          : 'overflow-hidden'
+      }`;
+      
+      card.setAttribute('data-country-code', country.cca3);
+      card.setAttribute('data-country-name', country.name.common);
+
+      card.innerHTML = this.getCardHTML(country, viewMode);
+
+      // Add click event for modal
+      card.addEventListener('click', (e) => {
+        if (!(e.target as Element).closest('.favorite-btn')) {
+          const event = new CustomEvent('country-selected', {
+            detail: { countryCode: country.cca3, countryName: country.name.common }
+          });
+          document.dispatchEvent(event);
+        }
+      });
+
+      return card;
+    }
+
+    private getCardHTML(country: Country, viewMode: 'grid' | 'list'): string {
+      const formatNumber = (num: number): string => num.toLocaleString();
+      
+      const getPrimaryLanguage = (languages?: { [key: string]: string }): string => {
+        if (!languages) return 'N/A';
+        const langKeys = Object.keys(languages);
+        return langKeys.length > 0 ? languages[langKeys[0]] : 'N/A';
+      };
+
+      const getPrimaryCurrency = (currencies?: { [key: string]: { name: string; symbol: string } }): string => {
+        if (!currencies) return 'N/A';
+        const currencyKeys = Object.keys(currencies);
+        if (currencyKeys.length > 0) {
+          const currency = currencies[currencyKeys[0]];
+          return `${currency.name} (${currency.symbol})`;
+        }
+        return 'N/A';
+      };
+
+      return `
+        <div class="${viewMode === 'list' ? 'w-16 h-12' : 'w-full h-48'} flex-shrink-0 overflow-hidden ${viewMode === 'grid' ? 'rounded-t-lg' : 'rounded-lg'}">
+          <img
+            src="${country.flags.svg || country.flags.png}"
+            alt="${country.flags.alt || `Flag of ${country.name.common}`}"
+            class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 ${viewMode === 'list' ? 'rounded-lg' : ''}"
+            loading="lazy"
+          />
+        </div>
+
+        <div class="${viewMode === 'grid' ? 'p-6' : 'flex-1 min-w-0'}">
+          <div class="mb-4">
+            <h3 class="text-lg font-bold text-gray-900 dark:text-white group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors duration-300">
+              ${country.name.common}
+            </h3>
+            ${viewMode === 'grid' ? `
+              <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                ${country.name.official}
+              </p>
+            ` : ''}
+          </div>
+
+          <div class="space-y-2 text-sm ${viewMode === 'list' ? 'grid grid-cols-2 md:grid-cols-4 gap-4 space-y-0' : ''}">
+            <div class="flex items-center text-gray-700 dark:text-gray-300">
+              <span class="font-medium mr-2">Capital:</span>
+              <span>${country.capital ? country.capital.join(', ') : 'N/A'}</span>
+            </div>
+            <div class="flex items-center text-gray-700 dark:text-gray-300">
+              <span class="font-medium mr-2">Region:</span>
+              <span>${country.region}</span>
+            </div>
+            <div class="flex items-center text-gray-700 dark:text-gray-300">
+              <span class="font-medium mr-2">Population:</span>
+              <span>${formatNumber(country.population)}</span>
+            </div>
+            ${viewMode === 'grid' ? `
+              <div class="flex items-center text-gray-700 dark:text-gray-300">
+                <span class="font-medium mr-2">Language:</span>
+                <span>${getPrimaryLanguage(country.languages)}</span>
+              </div>
+              <div class="flex items-center text-gray-700 dark:text-gray-300">
+                <span class="font-medium mr-2">Currency:</span>
+                <span class="truncate">${getPrimaryCurrency(country.currencies)}</span>
+              </div>
+            ` : ''}
+          </div>
+
+          <div class="flex justify-between items-center mt-4">
+            <button
+              class="favorite-btn p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200 text-gray-500 dark:text-gray-400 hover:text-red-500 dark:hover:text-red-400"
+              data-country-code="${country.cca3}"
+            >
+              <svg class="w-5 h-5 favorite-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+              </svg>
+            </button>
+            ${viewMode === 'grid' ? `
+              <span class="text-xs text-gray-500 dark:text-gray-400">
+                Click for details
+              </span>
+            ` : ''}
+          </div>
+        </div>
+      `;
+    }
+
+    private showLoadingState(): void {
+      this.hideAllStates();
+      const loading = document.getElementById('loading-state');
+      loading?.classList.remove('hidden');
+    }
+
+    private hideLoadingState(): void {
+      const loading = document.getElementById('loading-state');
+      loading?.classList.add('hidden');
+    }
+
+    private showErrorState(message: string): void {
+      this.hideAllStates();
+      const error = document.getElementById('error-state');
+      const errorMessage = document.getElementById('error-message');
+      if (error && errorMessage) {
+        error.classList.remove('hidden');
+        errorMessage.textContent = message;
+      }
+    }
+
+    private showResults(): void {
+      const container = document.getElementById('countries-container');
+      const resultsInfo = document.getElementById('results-info');
+      container?.classList.remove('hidden');
+      resultsInfo?.classList.remove('hidden');
+    }
+
+    private hideWelcomeMessage(): void {
+      const welcome = document.getElementById('welcome-message');
+      welcome?.classList.add('hidden');
+    }
+
+    private showApiFallbackBanner(): void {
+      const banner = document.getElementById('api-status-banner');
+      const indicator = document.getElementById('sample-data-indicator');
+      banner?.classList.remove('hidden');
+      indicator?.classList.remove('hidden');
+    }
+
+    private showNoResultsState(): void {
+      const container = document.getElementById('countries-container');
+      const existingGrid = container?.querySelector('.grid, .space-y-4');
+      if (existingGrid) {
+        existingGrid.innerHTML = `
+          <div class="col-span-full text-center py-20">
+            <div class="mx-auto w-24 h-24 text-gray-400 dark:text-gray-500 mb-4">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+              </svg>
+            </div>
+            <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">No countries found</h3>
+            <p class="text-gray-500 dark:text-gray-400">Try adjusting your search criteria or filters.</p>
+          </div>
+        `;
+      }
+    }
+
+    private hideAllStates(): void {
+      const states = ['welcome-message', 'loading-state', 'error-state'];
+      states.forEach(stateId => {
+        const element = document.getElementById(stateId);
+        element?.classList.add('hidden');
+      });
+    }
+
+    private updateResultsCount(): void {
+      const resultsCount = document.getElementById('results-count');
+      if (resultsCount) {
+        resultsCount.textContent = this.filteredCountries.length.toString();
+      }
+    }
+  }
+
+  // Initialize app when DOM is loaded
+  document.addEventListener('DOMContentLoaded', () => {
+    new CountryExplorer();
+  });
 </script>
