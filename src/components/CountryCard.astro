@@ -1,0 +1,218 @@
+---
+interface Props {
+  country: {
+    name: {
+      common: string;
+      official: string;
+    };
+    capital?: string[];
+    region: string;
+    population: number;
+    flags: {
+      png: string;
+      svg: string;
+      alt?: string;
+    };
+    languages?: {
+      [key: string]: string;
+    };
+    currencies?: {
+      [key: string]: {
+        name: string;
+        symbol: string;
+      };
+    };
+    cca3: string;
+  };
+  viewMode?: 'grid' | 'list';
+}
+
+const { country, viewMode = 'grid' } = Astro.props;
+
+// Format population with commas
+const formatNumber = (num: number): string => {
+  return num.toLocaleString();
+};
+
+// Get primary language
+const getPrimaryLanguage = (languages?: { [key: string]: string }): string => {
+  if (!languages) return 'N/A';
+  const langKeys = Object.keys(languages);
+  return langKeys.length > 0 ? languages[langKeys[0]] : 'N/A';
+};
+
+// Get primary currency
+const getPrimaryCurrency = (currencies?: { [key: string]: { name: string; symbol: string } }): string => {
+  if (!currencies) return 'N/A';
+  const currencyKeys = Object.keys(currencies);
+  if (currencyKeys.length > 0) {
+    const currency = currencies[currencyKeys[0]];
+    return `${currency.name} (${currency.symbol})`;
+  }
+  return 'N/A';
+};
+---
+
+<div 
+  class={`country-card bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 cursor-pointer group border border-gray-200 dark:border-gray-700 hover:border-primary-500 dark:hover:border-primary-400 ${
+    viewMode === 'list' 
+      ? 'flex items-center p-4 space-x-4' 
+      : 'overflow-hidden'
+  }`}
+  data-country-code={country.cca3}
+  data-country-name={country.name.common}
+>
+  <!-- Flag -->
+  <div class={`flex-shrink-0 ${viewMode === 'list' ? 'w-16 h-12' : 'w-full h-48'} overflow-hidden ${viewMode === 'grid' ? 'rounded-t-lg' : 'rounded-lg'}`}>
+    <img
+      src={country.flags.svg || country.flags.png}
+      alt={country.flags.alt || `Flag of ${country.name.common}`}
+      class={`w-full h-full object-cover group-hover:scale-105 transition-transform duration-300 ${
+        viewMode === 'list' ? 'rounded-lg' : ''
+      }`}
+      loading="lazy"
+    />
+  </div>
+
+  <!-- Content -->
+  <div class={`${viewMode === 'grid' ? 'p-6' : 'flex-1 min-w-0'}`}>
+    <!-- Country Name -->
+    <div class="mb-4">
+      <h3 class="text-lg font-bold text-gray-900 dark:text-white group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors duration-300">
+        {country.name.common}
+      </h3>
+      {viewMode === 'grid' && (
+        <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
+          {country.name.official}
+        </p>
+      )}
+    </div>
+
+    <!-- Country Details -->
+    <div class={`space-y-2 text-sm ${viewMode === 'list' ? 'grid grid-cols-2 md:grid-cols-4 gap-4 space-y-0' : ''}`}>
+      <div class="flex items-center text-gray-700 dark:text-gray-300">
+        <span class="font-medium mr-2">Capital:</span>
+        <span>{country.capital ? country.capital.join(', ') : 'N/A'}</span>
+      </div>
+
+      <div class="flex items-center text-gray-700 dark:text-gray-300">
+        <span class="font-medium mr-2">Region:</span>
+        <span>{country.region}</span>
+      </div>
+
+      <div class="flex items-center text-gray-700 dark:text-gray-300">
+        <span class="font-medium mr-2">Population:</span>
+        <span>{formatNumber(country.population)}</span>
+      </div>
+
+      {viewMode === 'grid' && (
+        <>
+          <div class="flex items-center text-gray-700 dark:text-gray-300">
+            <span class="font-medium mr-2">Language:</span>
+            <span>{getPrimaryLanguage(country.languages)}</span>
+          </div>
+
+          <div class="flex items-center text-gray-700 dark:text-gray-300">
+            <span class="font-medium mr-2">Currency:</span>
+            <span class="truncate">{getPrimaryCurrency(country.currencies)}</span>
+          </div>
+        </>
+      )}
+    </div>
+
+    <!-- Favorite Button -->
+    <div class="flex justify-between items-center mt-4">
+      <button
+        class="favorite-btn p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200 text-gray-500 dark:text-gray-400 hover:text-red-500 dark:hover:text-red-400"
+        data-country-code={country.cca3}
+        aria-label={`Add ${country.name.common} to favorites`}
+      >
+        <svg class="w-5 h-5 favorite-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+        </svg>
+      </button>
+
+      {viewMode === 'grid' && (
+        <span class="text-xs text-gray-500 dark:text-gray-400">
+          Click for details
+        </span>
+      )}
+    </div>
+  </div>
+</div>
+
+<script>
+  import { isFavorite, addToFavorites, removeFromFavorites } from '../utils/favorites';
+
+  class CountryCard {
+    constructor() {
+      this.init();
+    }
+
+    private init(): void {
+      // Handle country card clicks for modal
+      document.addEventListener('click', (e) => {
+        const card = (e.target as Element).closest('.country-card');
+        if (card && !(e.target as Element).closest('.favorite-btn')) {
+          const countryCode = card.getAttribute('data-country-code');
+          const countryName = card.getAttribute('data-country-name');
+          
+          if (countryCode && countryName) {
+            const event = new CustomEvent('country-selected', {
+              detail: { countryCode, countryName }
+            });
+            document.dispatchEvent(event);
+          }
+        }
+      });
+
+      // Handle favorite button clicks
+      document.addEventListener('click', (e) => {
+        const favoriteBtn = (e.target as Element).closest('.favorite-btn');
+        if (favoriteBtn) {
+          e.stopPropagation();
+          const countryCode = favoriteBtn.getAttribute('data-country-code');
+          if (countryCode) {
+            this.toggleFavorite(countryCode, favoriteBtn as HTMLElement);
+          }
+        }
+      });
+
+      // Update favorite buttons on page load
+      this.updateFavoriteButtons();
+    }
+
+    private toggleFavorite(countryCode: string, button: HTMLElement): void {
+      const icon = button.querySelector('.favorite-icon') as SVGElement;
+      
+      if (isFavorite(countryCode)) {
+        removeFromFavorites(countryCode);
+        icon.setAttribute('fill', 'none');
+        button.classList.remove('text-red-500', 'dark:text-red-400');
+        button.classList.add('text-gray-500', 'dark:text-gray-400');
+      } else {
+        addToFavorites(countryCode);
+        icon.setAttribute('fill', 'currentColor');
+        button.classList.remove('text-gray-500', 'dark:text-gray-400');
+        button.classList.add('text-red-500', 'dark:text-red-400');
+      }
+    }
+
+    private updateFavoriteButtons(): void {
+      document.querySelectorAll('.favorite-btn').forEach((button) => {
+        const countryCode = button.getAttribute('data-country-code');
+        if (countryCode && isFavorite(countryCode)) {
+          const icon = button.querySelector('.favorite-icon') as SVGElement;
+          icon.setAttribute('fill', 'currentColor');
+          button.classList.remove('text-gray-500', 'dark:text-gray-400');
+          button.classList.add('text-red-500', 'dark:text-red-400');
+        }
+      });
+    }
+  }
+
+  // Initialize country cards when DOM is loaded
+  document.addEventListener('DOMContentLoaded', () => {
+    new CountryCard();
+  });
+</script>

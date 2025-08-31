@@ -1,0 +1,163 @@
+---
+import CountryCard from './CountryCard.astro';
+
+interface Props {
+  countries: Array<{
+    name: {
+      common: string;
+      official: string;
+    };
+    capital?: string[];
+    region: string;
+    population: number;
+    flags: {
+      png: string;
+      svg: string;
+      alt?: string;
+    };
+    languages?: {
+      [key: string]: string;
+    };
+    currencies?: {
+      [key: string]: {
+        name: string;
+        symbol: string;
+      };
+    };
+    cca3: string;
+  }>;
+  viewMode?: 'grid' | 'list';
+  loading?: boolean;
+}
+
+const { countries, viewMode = 'grid', loading = false } = Astro.props;
+---
+
+<!-- Loading State -->
+{loading && (
+  <div class="flex justify-center items-center py-20">
+    <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
+  </div>
+)}
+
+<!-- Empty State -->
+{!loading && countries.length === 0 && (
+  <div class="text-center py-20">
+    <div class="mx-auto w-24 h-24 text-gray-400 dark:text-gray-500 mb-4">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 12h6m-6-4h6m2 5.291A7.962 7.962 0 0112 15c-2.34 0-4.5-.816-6.194-2.175M6.177 17.822a6.961 6.961 0 01-2.88-8.822 6.961 6.961 0 012.88-8.822m13.646 0a6.961 6.961 0 012.88 8.822 6.961 6.961 0 01-2.88 8.822"></path>
+      </svg>
+    </div>
+    <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">No countries found</h3>
+    <p class="text-gray-500 dark:text-gray-400">Try adjusting your search criteria or filters.</p>
+  </div>
+)}
+
+<!-- Countries Grid/List -->
+{!loading && countries.length > 0 && (
+  <div 
+    id="countries-container"
+    class={`transition-all duration-300 ${
+      viewMode === 'grid' 
+        ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6' 
+        : 'space-y-4'
+    }`}
+  >
+    {countries.map((country) => (
+      <CountryCard country={country} viewMode={viewMode} />
+    ))}
+  </div>
+)}
+
+<!-- Pagination (placeholder for future implementation) -->
+<div id="pagination-container" class="mt-8 flex justify-center">
+  <!-- Pagination controls will be added here in the future -->
+</div>
+
+<script>
+  class CountryGrid {
+    private container: HTMLElement | null;
+    private currentViewMode: 'grid' | 'list' = 'grid';
+
+    constructor() {
+      this.container = document.getElementById('countries-container');
+      this.init();
+    }
+
+    private init(): void {
+      // Listen for view mode changes
+      document.addEventListener('view-change', (e: Event) => {
+        const customEvent = e as CustomEvent;
+        this.updateViewMode(customEvent.detail.view);
+      });
+
+      // Listen for filter changes to trigger animations
+      document.addEventListener('countries-updated', () => {
+        this.animateCountryCards();
+      });
+    }
+
+    private updateViewMode(viewMode: 'grid' | 'list'): void {
+      if (!this.container) return;
+      
+      this.currentViewMode = viewMode;
+      
+      // Update container classes
+      this.container.className = `transition-all duration-300 ${
+        viewMode === 'grid' 
+          ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6' 
+          : 'space-y-4'
+      }`;
+
+      // Update all country cards
+      const cards = this.container.querySelectorAll('.country-card');
+      cards.forEach((card) => {
+        const cardElement = card as HTMLElement;
+        
+        if (viewMode === 'list') {
+          cardElement.className = cardElement.className.replace(
+            /country-card.*?(?=data-)/g, 
+            'country-card bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 cursor-pointer group border border-gray-200 dark:border-gray-700 hover:border-primary-500 dark:hover:border-primary-400 flex items-center p-4 space-x-4 '
+          );
+        } else {
+          cardElement.className = cardElement.className.replace(
+            /country-card.*?(?=data-)/g,
+            'country-card bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 cursor-pointer group border border-gray-200 dark:border-gray-700 hover:border-primary-500 dark:hover:border-primary-400 overflow-hidden '
+          );
+        }
+      });
+
+      this.animateCountryCards();
+    }
+
+    private animateCountryCards(): void {
+      if (!this.container) return;
+
+      const cards = this.container.querySelectorAll('.country-card');
+      
+      // Add animation classes
+      cards.forEach((card, index) => {
+        const cardElement = card as HTMLElement;
+        cardElement.style.opacity = '0';
+        cardElement.style.transform = 'translateY(20px)';
+        
+        setTimeout(() => {
+          cardElement.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+          cardElement.style.opacity = '1';
+          cardElement.style.transform = 'translateY(0)';
+        }, index * 50); // Stagger animation
+      });
+    }
+
+    public updateCountries(countries: any[]): void {
+      // This method would be called to update the countries display
+      // For now, it just triggers the animation
+      this.animateCountryCards();
+    }
+  }
+
+  // Initialize country grid when DOM is loaded
+  document.addEventListener('DOMContentLoaded', () => {
+    new CountryGrid();
+  });
+</script>

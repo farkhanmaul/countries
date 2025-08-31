@@ -1,16 +1,133 @@
 ---
+import Layout from '../layouts/Layout.astro';
+import Navbar from '../components/Navbar.astro';
+import SearchBar from '../components/SearchBar.astro';
+import RegionFilter from '../components/RegionFilter.astro';
+import SortingControls from '../components/SortingControls.astro';
+import CountryGrid from '../components/CountryGrid.astro';
+import CountryModal from '../components/CountryModal.astro';
+import { fetchAllCountries } from '../utils/api';
 
+// Fetch initial countries data
+let countries = [];
+let error = null;
+
+try {
+  countries = await fetchAllCountries();
+} catch (e) {
+  error = e instanceof Error ? e.message : 'Failed to load countries';
+  console.error('Error loading countries:', e);
+}
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<Layout title="Country Explorer - Discover Countries Around the World">
+  <Navbar />
+  
+  <main class="flex-1">
+    <!-- Hero Section -->
+    <section class="bg-gradient-to-br from-primary-50 to-blue-100 dark:from-gray-800 dark:to-gray-900 py-16">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center">
+          <h1 class="text-4xl md:text-6xl font-bold text-gray-900 dark:text-white mb-6">
+            Explore the
+            <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary-600 to-blue-600">
+              World
+            </span>
+          </h1>
+          <p class="text-xl text-gray-600 dark:text-gray-300 mb-8 max-w-3xl mx-auto">
+            Discover detailed information about countries worldwide. Search, filter, and explore 
+            population, geography, culture, languages, and much more.
+          </p>
+          
+          <!-- Search Section -->
+          <div class="max-w-2xl mx-auto">
+            <SearchBar />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Filters and Controls -->
+    <section class="py-8 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex flex-col lg:flex-row gap-6 items-start lg:items-center">
+          <!-- Region Filter -->
+          <div class="w-full lg:w-64">
+            <RegionFilter />
+          </div>
+          
+          <!-- Sorting Controls -->
+          <div class="w-full lg:flex-1">
+            <SortingControls />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Countries Section -->
+    <section class="py-8">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Results Info -->
+        <div id="results-info" class="mb-6">
+          <p class="text-gray-600 dark:text-gray-400">
+            {error ? (
+              <span class="text-red-600 dark:text-red-400">Error: {error}</span>
+            ) : (
+              <span>Showing <strong id="results-count">{countries.length}</strong> countries</span>
+            )}
+          </p>
+        </div>
+
+        <!-- Countries Grid -->
+        {error ? (
+          <div class="text-center py-20">
+            <div class="mx-auto w-24 h-24 text-red-500 mb-4">
+              <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+            </div>
+            <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">Failed to load countries</h3>
+            <p class="text-gray-500 dark:text-gray-400 mb-4">{error}</p>
+            <button 
+              onclick="window.location.reload()" 
+              class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors duration-200"
+            >
+              Try Again
+            </button>
+          </div>
+        ) : (
+          <CountryGrid countries={countries} />
+        )}
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div class="text-center">
+        <p class="text-gray-600 dark:text-gray-400">
+          Built with ❤️ using 
+          <a href="https://astro.build" target="_blank" rel="noopener noreferrer" class="text-primary-600 dark:text-primary-400 hover:underline">
+            Astro
+          </a>
+          and 
+          <a href="https://restcountries.com" target="_blank" rel="noopener noreferrer" class="text-primary-600 dark:text-primary-400 hover:underline">
+            REST Countries API
+          </a>
+        </p>
+        <p class="text-sm text-gray-500 dark:text-gray-500 mt-2">
+          © 2024 Country Explorer. Made for learning and exploration.
+        </p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Modal -->
+  <CountryModal />
+</Layout>
+
+<!-- Pass server-side data to client-side -->
+<script define:vars={{ countries }}>
+  window.__INITIAL_COUNTRIES__ = countries;
+</script>

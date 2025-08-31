@@ -1,0 +1,198 @@
+---
+// No server-side logic needed for the search bar
+---
+
+<div class="relative max-w-md mx-auto">
+  <div class="relative">
+    <!-- Search Icon -->
+    <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+      <svg 
+        class="w-5 h-5 text-gray-400 dark:text-gray-500" 
+        fill="none" 
+        stroke="currentColor" 
+        viewBox="0 0 24 24"
+      >
+        <path 
+          stroke-linecap="round" 
+          stroke-linejoin="round" 
+          stroke-width="2" 
+          d="m21 21-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+        ></path>
+      </svg>
+    </div>
+    
+    <!-- Search Input -->
+    <input
+      id="search-input"
+      type="search"
+      placeholder="Search for a country..."
+      class="w-full pl-10 pr-4 py-3 text-gray-900 dark:text-white bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:focus:ring-primary-400 dark:focus:border-primary-400 transition-colors duration-200"
+      autocomplete="off"
+    />
+    
+    <!-- Clear Button -->
+    <button
+      id="clear-search"
+      type="button"
+      class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 opacity-0 pointer-events-none transition-opacity duration-200"
+      aria-label="Clear search"
+    >
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+      </svg>
+    </button>
+  </div>
+  
+  <!-- Search suggestions (will be populated via JS) -->
+  <div 
+    id="search-suggestions" 
+    class="absolute z-10 w-full mt-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg shadow-lg hidden max-h-60 overflow-y-auto"
+  >
+    <!-- Suggestions will be dynamically added here -->
+  </div>
+</div>
+
+<script>
+  class SearchBar {
+    private searchInput: HTMLInputElement | null;
+    private clearButton: HTMLButtonElement | null;
+    private suggestions: HTMLDivElement | null;
+    private debounceTimer: number | null = null;
+
+    constructor() {
+      this.searchInput = document.getElementById('search-input') as HTMLInputElement;
+      this.clearButton = document.getElementById('clear-search') as HTMLButtonElement;
+      this.suggestions = document.getElementById('search-suggestions') as HTMLDivElement;
+      
+      this.init();
+    }
+
+    private init(): void {
+      if (!this.searchInput || !this.clearButton) return;
+
+      // Handle input events
+      this.searchInput.addEventListener('input', (e) => {
+        const target = e.target as HTMLInputElement;
+        this.handleInput(target.value);
+      });
+
+      // Handle clear button
+      this.clearButton.addEventListener('click', () => {
+        this.clearSearch();
+      });
+
+      // Handle focus events
+      this.searchInput.addEventListener('focus', () => {
+        if (this.searchInput?.value) {
+          this.showSuggestions();
+        }
+      });
+
+      // Handle click outside to close suggestions
+      document.addEventListener('click', (e) => {
+        if (!this.searchInput?.contains(e.target as Node) && 
+            !this.suggestions?.contains(e.target as Node)) {
+          this.hideSuggestions();
+        }
+      });
+
+      // Dispatch search events
+      this.searchInput.addEventListener('input', (e) => {
+        const target = e.target as HTMLInputElement;
+        const event = new CustomEvent('country-search', {
+          detail: { query: target.value.trim() }
+        });
+        document.dispatchEvent(event);
+      });
+    }
+
+    private handleInput(value: string): void {
+      // Show/hide clear button
+      if (this.clearButton) {
+        if (value) {
+          this.clearButton.classList.remove('opacity-0', 'pointer-events-none');
+          this.clearButton.classList.add('opacity-100');
+        } else {
+          this.clearButton.classList.add('opacity-0', 'pointer-events-none');
+          this.clearButton.classList.remove('opacity-100');
+        }
+      }
+
+      // Debounce search
+      if (this.debounceTimer) {
+        clearTimeout(this.debounceTimer);
+      }
+
+      this.debounceTimer = window.setTimeout(() => {
+        if (value.trim()) {
+          // In a real app, you'd fetch suggestions here
+          this.showSuggestions();
+        } else {
+          this.hideSuggestions();
+        }
+      }, 300);
+    }
+
+    private clearSearch(): void {
+      if (this.searchInput) {
+        this.searchInput.value = '';
+        this.searchInput.focus();
+      }
+      
+      if (this.clearButton) {
+        this.clearButton.classList.add('opacity-0', 'pointer-events-none');
+      }
+      
+      this.hideSuggestions();
+      
+      // Dispatch clear event
+      const event = new CustomEvent('country-search', {
+        detail: { query: '' }
+      });
+      document.dispatchEvent(event);
+    }
+
+    private showSuggestions(): void {
+      if (this.suggestions) {
+        this.suggestions.classList.remove('hidden');
+      }
+    }
+
+    private hideSuggestions(): void {
+      if (this.suggestions) {
+        this.suggestions.classList.add('hidden');
+      }
+    }
+
+    public updateSuggestions(countries: string[]): void {
+      if (!this.suggestions) return;
+
+      this.suggestions.innerHTML = '';
+
+      countries.slice(0, 5).forEach(country => {
+        const suggestion = document.createElement('div');
+        suggestion.className = 'px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer text-gray-900 dark:text-white';
+        suggestion.textContent = country;
+        
+        suggestion.addEventListener('click', () => {
+          if (this.searchInput) {
+            this.searchInput.value = country;
+          }
+          this.hideSuggestions();
+          
+          const event = new CustomEvent('country-search', {
+            detail: { query: country }
+          });
+          document.dispatchEvent(event);
+        });
+
+        this.suggestions.appendChild(suggestion);
+      });
+    }
+  }
+
+  // Initialize search bar when DOM is loaded
+  document.addEventListener('DOMContentLoaded', () => {
+    new SearchBar();
+  });
+</script>
