@@ -64,7 +64,29 @@ let error = null;
             
             <!-- View Mode Toggle -->
             <div class="space-y-2 md:col-span-2 xl:col-span-1">
-              <ViewControls />
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                View Mode
+              </label>
+              <div class="flex rounded-lg border border-gray-300 dark:border-gray-600 p-1 bg-gray-50 dark:bg-gray-700">
+                <button 
+                  id="view-grid" 
+                  class="view-mode-btn active flex-1 flex items-center justify-center px-3 py-2 rounded-md text-sm font-medium bg-white dark:bg-gray-800 text-primary-600 dark:text-primary-400 shadow-sm"
+                >
+                  <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path>
+                  </svg>
+                  Grid
+                </button>
+                <button 
+                  id="view-list" 
+                  class="view-mode-btn flex-1 flex items-center justify-center px-3 py-2 rounded-md text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
+                >
+                  <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"></path>
+                  </svg>
+                  List
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -286,11 +308,44 @@ let error = null;
         this.renderCountries();
       });
 
+      // View mode buttons
+      const viewGridBtn = document.getElementById('view-grid');
+      const viewListBtn = document.getElementById('view-list');
+      
+      viewGridBtn?.addEventListener('click', () => {
+        this.handleViewModeChange('grid');
+      });
+      
+      viewListBtn?.addEventListener('click', () => {
+        this.handleViewModeChange('list');
+      });
+
       // Retry button
       const retryBtn = document.getElementById('retry-button');
       retryBtn?.addEventListener('click', () => {
         this.loadAllCountries();
       });
+    }
+
+    private handleViewModeChange(viewMode: 'grid' | 'list'): void {
+      this.currentViewMode = viewMode;
+      
+      // Update button states
+      const viewButtons = document.querySelectorAll('.view-mode-btn');
+      viewButtons.forEach(btn => {
+        const button = btn as HTMLButtonElement;
+        if ((viewMode === 'grid' && button.id === 'view-grid') || 
+            (viewMode === 'list' && button.id === 'view-list')) {
+          button.classList.add('active', 'bg-white', 'dark:bg-gray-800', 'text-primary-600', 'dark:text-primary-400', 'shadow-sm');
+          button.classList.remove('text-gray-500', 'dark:text-gray-400');
+        } else {
+          button.classList.remove('active', 'bg-white', 'dark:bg-gray-800', 'text-primary-600', 'dark:text-primary-400', 'shadow-sm');
+          button.classList.add('text-gray-500', 'dark:text-gray-400');
+        }
+      });
+      
+      // Re-render countries with new view mode
+      this.renderCountries();
     }
 
     private async loadAllCountries(): Promise<void> {
