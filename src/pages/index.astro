@@ -653,6 +653,12 @@ let error = null;
           case 'area':
             comparison = (a.area || 0) - (b.area || 0);
             break;
+          case 'density':
+            // Calculate population density (people per km²)
+            const densityA = (a.area && a.area > 0) ? (a.population || 0) / a.area : 0;
+            const densityB = (b.area && b.area > 0) ? (b.population || 0) / b.area : 0;
+            comparison = densityA - densityB;
+            break;
         }
 
         return this.currentFilters.sortOrder === 'desc' ? -comparison : comparison;

@@ -66,7 +66,7 @@
             <p id="modal-official-name" class="text-lg text-gray-600 dark:text-gray-400 mb-4"></p>
             
             <!-- Quick Stats Cards -->
-            <div class="grid grid-cols-2 gap-3">
+            <div class="grid grid-cols-2 lg:grid-cols-3 gap-3">
               <div class="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/30 dark:to-blue-800/20 p-4 rounded-lg border border-blue-200 dark:border-blue-700">
                 <div class="text-xs font-medium text-blue-600 dark:text-blue-400 uppercase tracking-wide mb-1">Population</div>
                 <p id="modal-population" class="text-xl font-bold text-blue-900 dark:text-blue-100"></p>
@@ -74,6 +74,10 @@
               <div class="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/30 dark:to-green-800/20 p-4 rounded-lg border border-green-200 dark:border-green-700">
                 <div class="text-xs font-medium text-green-600 dark:text-green-400 uppercase tracking-wide mb-1">Area</div>
                 <p id="modal-area" class="text-xl font-bold text-green-900 dark:text-green-100"></p>
+              </div>
+              <div class="bg-gradient-to-br from-amber-50 to-amber-100 dark:from-amber-900/30 dark:to-amber-800/20 p-4 rounded-lg border border-amber-200 dark:border-amber-700 col-span-2 lg:col-span-1">
+                <div class="text-xs font-medium text-amber-600 dark:text-amber-400 uppercase tracking-wide mb-1">Population Density</div>
+                <p id="modal-density" class="text-xl font-bold text-amber-900 dark:text-amber-100"></p>
               </div>
             </div>
           </div>
@@ -447,6 +451,10 @@
       // Update stats
       this.updateElement('modal-population', country.population.toLocaleString());
       this.updateElement('modal-area', `${country.area.toLocaleString()} km²`);
+      
+      // Calculate and display population density
+      const density = this.calculateDensity(country.population, country.area);
+      this.updateElement('modal-density', density);
 
       // Update location info
       this.updateElement('modal-capital', country.capital?.join(', ') || 'N/A');
@@ -492,6 +500,18 @@
     private updateElement(id: string, content: string): void {
       const element = document.getElementById(id);
       if (element) element.textContent = content;
+    }
+
+    private calculateDensity(population: number, area: number): string {
+      if (!area || area <= 0) return 'N/A';
+      const density = population / area;
+      if (density < 1) {
+        return `${density.toFixed(2)} people/km²`;
+      } else if (density < 1000) {
+        return `${Math.round(density)} people/km²`;
+      } else {
+        return `${(density / 1000).toFixed(1)}K people/km²`;
+      }
     }
 
     private updateTimezones(timezones: string[]): void {

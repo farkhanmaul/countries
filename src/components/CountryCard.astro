@@ -51,6 +51,19 @@ const getPrimaryCurrency = (currencies?: { [key: string]: { name: string; symbol
   }
   return 'N/A';
 };
+
+// Calculate population density
+const getPopulationDensity = (population: number, area: number): string => {
+  if (!area || area <= 0) return 'N/A';
+  const density = population / area;
+  if (density < 1) {
+    return `${density.toFixed(2)} people/km²`;
+  } else if (density < 1000) {
+    return `${Math.round(density)} people/km²`;
+  } else {
+    return `${(density / 1000).toFixed(1)}K people/km²`;
+  }
+};
 ---
 
 <div 
@@ -105,8 +118,25 @@ const getPrimaryCurrency = (currencies?: { [key: string]: { name: string; symbol
         <span>{formatNumber(country.population)}</span>
       </div>
 
+      {viewMode === 'list' && (
+        <div class="flex items-center text-gray-700 dark:text-gray-300">
+          <span class="font-medium mr-2">Area:</span>
+          <span>{country.area ? `${formatNumber(country.area)} km²` : 'N/A'}</span>
+        </div>
+      )}
+
+      <div class="flex items-center text-gray-700 dark:text-gray-300">
+        <span class="font-medium mr-2">Density:</span>
+        <span>{getPopulationDensity(country.population, country.area)}</span>
+      </div>
+
       {viewMode === 'grid' && (
         <>
+          <div class="flex items-center text-gray-700 dark:text-gray-300">
+            <span class="font-medium mr-2">Area:</span>
+            <span>{country.area ? `${formatNumber(country.area)} km²` : 'N/A'}</span>
+          </div>
+
           <div class="flex items-center text-gray-700 dark:text-gray-300">
             <span class="font-medium mr-2">Language:</span>
             <span>{getPrimaryLanguage(country.languages)}</span>
