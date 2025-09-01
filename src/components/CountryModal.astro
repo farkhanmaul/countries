@@ -79,84 +79,141 @@
           </div>
         </div>
 
-        <!-- Information Tabs/Cards -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <!-- Location Card -->
-          <div class="bg-gray-50 dark:bg-gray-800/50 rounded-xl p-6 border border-gray-200 dark:border-gray-700">
+        <!-- Information Cards Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+          <!-- Location & Geography Card -->
+          <div class="bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-800/10 rounded-xl p-6 border border-purple-200 dark:border-purple-700">
             <div class="flex items-center mb-4">
-              <svg class="w-5 h-5 text-purple-600 dark:text-purple-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
-              </svg>
-              <h4 class="text-lg font-semibold text-gray-900 dark:text-white">Location</h4>
+              <i data-lucide="map-pin" class="w-5 h-5 text-purple-600 dark:text-purple-400 mr-2"></i>
+              <h4 class="text-lg font-semibold text-purple-900 dark:text-purple-100">Location & Geography</h4>
             </div>
             <div class="space-y-3 text-sm">
-              <div class="flex justify-between">
-                <span class="text-gray-600 dark:text-gray-400">Capital:</span>
-                <span id="modal-capital" class="font-medium text-gray-900 dark:text-white text-right"></span>
+              <div class="flex justify-between items-center">
+                <span class="text-purple-700 dark:text-purple-300">Capital:</span>
+                <span id="modal-capital" class="font-medium text-purple-900 dark:text-purple-100 text-right"></span>
               </div>
-              <div class="flex justify-between">
-                <span class="text-gray-600 dark:text-gray-400">Region:</span>
-                <span id="modal-region" class="font-medium text-gray-900 dark:text-white"></span>
+              <div class="flex justify-between items-center">
+                <span class="text-purple-700 dark:text-purple-300">Region:</span>
+                <span id="modal-region" class="font-medium text-purple-900 dark:text-purple-100"></span>
               </div>
-              <div class="flex justify-between">
-                <span class="text-gray-600 dark:text-gray-400">Subregion:</span>
-                <span id="modal-subregion" class="font-medium text-gray-900 dark:text-white text-right"></span>
+              <div class="flex justify-between items-center">
+                <span class="text-purple-700 dark:text-purple-300">Subregion:</span>
+                <span id="modal-subregion" class="font-medium text-purple-900 dark:text-purple-100 text-right"></span>
               </div>
-              <div class="pt-2 border-t border-gray-200 dark:border-gray-600">
-                <span class="text-gray-600 dark:text-gray-400 block mb-2">Timezones:</span>
-                <div id="modal-timezones" class="text-xs text-gray-800 dark:text-gray-200"></div>
+              <div class="flex justify-between items-center">
+                <span class="text-purple-700 dark:text-purple-300">Landlocked:</span>
+                <span id="modal-landlocked" class="font-medium text-purple-900 dark:text-purple-100"></span>
+              </div>
+              <div class="pt-2 border-t border-purple-200 dark:border-purple-600">
+                <span class="text-purple-700 dark:text-purple-300 block mb-2">Timezones:</span>
+                <div id="modal-timezones" class="text-xs font-mono text-purple-800 dark:text-purple-200 space-y-1"></div>
               </div>
             </div>
           </div>
 
-          <!-- Culture Card -->
-          <div class="bg-gray-50 dark:bg-gray-800/50 rounded-xl p-6 border border-gray-200 dark:border-gray-700">
+          <!-- Culture & Languages Card -->
+          <div class="bg-gradient-to-br from-orange-50 to-orange-100 dark:from-orange-900/20 dark:to-orange-800/10 rounded-xl p-6 border border-orange-200 dark:border-orange-700">
             <div class="flex items-center mb-4">
-              <svg class="w-5 h-5 text-orange-600 dark:text-orange-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 4V2a1 1 0 011-1h8a1 1 0 011 1v2m-9 0h10M7 4v16m10-16v16M7 20H5a1 1 0 01-1-1V7a1 1 0 011-1h2m10 14h2a1 1 0 001-1V7a1 1 0 00-1-1h-2"></path>
-              </svg>
-              <h4 class="text-lg font-semibold text-gray-900 dark:text-white">Culture</h4>
+              <i data-lucide="globe-2" class="w-5 h-5 text-orange-600 dark:text-orange-400 mr-2"></i>
+              <h4 class="text-lg font-semibold text-orange-900 dark:text-orange-100">Culture & Languages</h4>
             </div>
             <div class="space-y-3 text-sm">
               <div>
-                <span class="text-gray-600 dark:text-gray-400 block mb-2">Languages:</span>
+                <span class="text-orange-700 dark:text-orange-300 block mb-2">Languages:</span>
                 <div id="modal-languages" class="space-y-1"></div>
               </div>
               <div>
-                <span class="text-gray-600 dark:text-gray-400 block mb-2">Currencies:</span>
+                <span class="text-orange-700 dark:text-orange-300 block mb-2">Currencies:</span>
                 <div id="modal-currencies" class="space-y-1"></div>
               </div>
-              <div class="pt-2 border-t border-gray-200 dark:border-gray-600">
-                <div class="flex justify-between">
-                  <span class="text-gray-600 dark:text-gray-400">Demonyms:</span>
-                  <span id="modal-demonyms" class="font-medium text-gray-900 dark:text-white text-right"></span>
+              <div class="pt-2 border-t border-orange-200 dark:border-orange-600">
+                <div class="flex justify-between items-center">
+                  <span class="text-orange-700 dark:text-orange-300">Demonyms:</span>
+                  <span id="modal-demonyms" class="font-medium text-orange-900 dark:text-orange-100 text-right"></span>
+                </div>
+                <div class="flex justify-between items-center mt-2">
+                  <span class="text-orange-700 dark:text-orange-300">Start of Week:</span>
+                  <span id="modal-start-of-week" class="font-medium text-orange-900 dark:text-orange-100"></span>
                 </div>
               </div>
             </div>
           </div>
 
-          <!-- Government Card -->
-          <div class="bg-gray-50 dark:bg-gray-800/50 rounded-xl p-6 border border-gray-200 dark:border-gray-700">
+          <!-- Government & Codes Card -->
+          <div class="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/10 rounded-xl p-6 border border-blue-200 dark:border-blue-700">
             <div class="flex items-center mb-4">
-              <svg class="w-5 h-5 text-blue-600 dark:text-blue-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-4m-5 0H3m2 0h4m0-16v16m8-16h2a2 2 0 012 2v16"></path>
-              </svg>
-              <h4 class="text-lg font-semibold text-gray-900 dark:text-white">Government</h4>
+              <i data-lucide="landmark" class="w-5 h-5 text-blue-600 dark:text-blue-400 mr-2"></i>
+              <h4 class="text-lg font-semibold text-blue-900 dark:text-blue-100">Government & Codes</h4>
             </div>
             <div class="space-y-3 text-sm">
-              <div class="flex justify-between">
-                <span class="text-gray-600 dark:text-gray-400">UN Member:</span>
-                <span id="modal-un-member" class="font-medium text-gray-900 dark:text-white"></span>
+              <div class="flex justify-between items-center">
+                <span class="text-blue-700 dark:text-blue-300">UN Member:</span>
+                <span id="modal-un-member" class="font-medium text-blue-900 dark:text-blue-100"></span>
               </div>
-              <div class="flex justify-between">
-                <span class="text-gray-600 dark:text-gray-400">Independent:</span>
-                <span id="modal-independent" class="font-medium text-gray-900 dark:text-white"></span>
+              <div class="flex justify-between items-center">
+                <span class="text-blue-700 dark:text-blue-300">Independent:</span>
+                <span id="modal-independent" class="font-medium text-blue-900 dark:text-blue-100"></span>
               </div>
-              <div class="flex justify-between">
-                <span class="text-gray-600 dark:text-gray-400">Calling Code:</span>
-                <span id="modal-calling-code" class="font-medium text-gray-900 dark:text-white"></span>
+              <div class="flex justify-between items-center">
+                <span class="text-blue-700 dark:text-blue-300">Calling Code:</span>
+                <span id="modal-calling-code" class="font-medium text-blue-900 dark:text-blue-100"></span>
               </div>
+              <div class="pt-2 border-t border-blue-200 dark:border-blue-600 space-y-2">
+                <div class="flex justify-between items-center">
+                  <span class="text-blue-700 dark:text-blue-300">ISO Alpha-2:</span>
+                  <span id="modal-alpha-2" class="font-mono font-bold text-blue-900 dark:text-blue-100 bg-blue-100 dark:bg-blue-800 px-2 py-1 rounded"></span>
+                </div>
+                <div class="flex justify-between items-center">
+                  <span class="text-blue-700 dark:text-blue-300">ISO Alpha-3:</span>
+                  <span id="modal-alpha-3" class="font-mono font-bold text-blue-900 dark:text-blue-100 bg-blue-100 dark:bg-blue-800 px-2 py-1 rounded"></span>
+                </div>
+                <div class="flex justify-between items-center">
+                  <span class="text-blue-700 dark:text-blue-300">FIFA Code:</span>
+                  <span id="modal-fifa" class="font-mono font-bold text-blue-900 dark:text-blue-100"></span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Additional Information Section -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <!-- Transportation & Postal Card -->
+          <div class="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-800/10 rounded-xl p-6 border border-green-200 dark:border-green-700">
+            <div class="flex items-center mb-4">
+              <i data-lucide="car" class="w-5 h-5 text-green-600 dark:text-green-400 mr-2"></i>
+              <h4 class="text-lg font-semibold text-green-900 dark:text-green-100">Transportation & Postal</h4>
+            </div>
+            <div class="space-y-3 text-sm">
+              <div class="flex justify-between items-center">
+                <span class="text-green-700 dark:text-green-300">Driving Side:</span>
+                <span id="modal-car-side" class="font-medium text-green-900 dark:text-green-100"></span>
+              </div>
+              <div class="flex justify-between items-center">
+                <span class="text-green-700 dark:text-green-300">Car Signs:</span>
+                <span id="modal-car-signs" class="font-mono font-bold text-green-900 dark:text-green-100 bg-green-100 dark:bg-green-800 px-2 py-1 rounded"></span>
+              </div>
+              <div class="pt-2 border-t border-green-200 dark:border-green-600">
+                <span class="text-green-700 dark:text-green-300 block mb-2">Postal Code Format:</span>
+                <div id="modal-postal-code" class="font-mono text-xs bg-green-100 dark:bg-green-800 p-2 rounded text-green-900 dark:text-green-100"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Coat of Arms Card -->
+          <div id="modal-coat-of-arms-card" class="hidden bg-gradient-to-br from-amber-50 to-amber-100 dark:from-amber-900/20 dark:to-amber-800/10 rounded-xl p-6 border border-amber-200 dark:border-amber-700">
+            <div class="flex items-center mb-4">
+              <i data-lucide="shield" class="w-5 h-5 text-amber-600 dark:text-amber-400 mr-2"></i>
+              <h4 class="text-lg font-semibold text-amber-900 dark:text-amber-100">National Symbols</h4>
+            </div>
+            <div class="text-center">
+              <img 
+                id="modal-coat-of-arms" 
+                src="" 
+                alt="Coat of Arms" 
+                class="w-24 h-24 object-contain mx-auto rounded-lg bg-white p-2 shadow-md"
+              />
+              <p class="text-xs text-amber-700 dark:text-amber-300 mt-2">National Coat of Arms</p>
             </div>
           </div>
         </div>
@@ -220,6 +277,10 @@
       svg: string;
       alt?: string;
     };
+    coatOfArms?: {
+      png?: string;
+      svg?: string;
+    };
     languages?: { [key: string]: string };
     currencies?: { [key: string]: { name: string; symbol: string } };
     timezones: string[];
@@ -227,9 +288,22 @@
     idd: { root?: string; suffixes?: string[] };
     unMember: boolean;
     independent?: boolean;
+    landlocked?: boolean;
     borders?: string[];
     maps: { googleMaps: string; openStreetMaps: string };
+    cca2: string;
     cca3: string;
+    ccn3?: string;
+    fifa?: string;
+    car?: {
+      side: string;
+      signs?: string[];
+    };
+    postalCode?: {
+      format: string;
+      regex: string;
+    };
+    startOfWeek?: string;
   }
 
   class CountryModal {
@@ -378,17 +452,29 @@
       this.updateElement('modal-capital', country.capital?.join(', ') || 'N/A');
       this.updateElement('modal-region', country.region);
       this.updateElement('modal-subregion', country.subregion || 'N/A');
-      this.updateElement('modal-timezones', country.timezones.join(', '));
+      this.updateElement('modal-landlocked', country.landlocked ? 'Yes' : 'No');
+      this.updateTimezones(country.timezones);
 
       // Update cultural info
       this.updateLanguages(country.languages);
       this.updateCurrencies(country.currencies);
       this.updateDemonyms(country.demonyms);
+      this.updateElement('modal-start-of-week', country.startOfWeek || 'N/A');
 
-      // Update additional info
+      // Update government & codes
       this.updateCallingCode(country.idd);
       this.updateElement('modal-un-member', country.unMember ? 'Yes' : 'No');
       this.updateElement('modal-independent', country.independent ? 'Yes' : 'No');
+      this.updateElement('modal-alpha-2', country.cca2 || 'N/A');
+      this.updateElement('modal-alpha-3', country.cca3 || 'N/A');
+      this.updateElement('modal-fifa', country.fifa || 'N/A');
+
+      // Update transportation & postal
+      this.updateCarInfo(country.car);
+      this.updatePostalCode(country.postalCode);
+
+      // Update coat of arms
+      this.updateCoatOfArms(country.coatOfArms);
 
       // Update borders
       this.updateBorders(country.borders);
@@ -408,6 +494,20 @@
       if (element) element.textContent = content;
     }
 
+    private updateTimezones(timezones: string[]): void {
+      const container = document.getElementById('modal-timezones');
+      if (!container) return;
+
+      if (!timezones || timezones.length === 0) {
+        container.textContent = 'N/A';
+        return;
+      }
+
+      container.innerHTML = timezones.map(timezone => 
+        `<div class="bg-purple-100 dark:bg-purple-800 text-purple-800 dark:text-purple-200 px-2 py-1 rounded text-xs">${timezone}</div>`
+      ).join('');
+    }
+
     private updateLanguages(languages?: { [key: string]: string }): void {
       const container = document.getElementById('modal-languages');
       if (!container) return;
@@ -419,7 +519,7 @@
 
       const langList = Object.values(languages);
       container.innerHTML = langList.map(lang => 
-        `<span class="inline-block bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 px-2 py-1 rounded text-sm mr-2 mb-1">${lang}</span>`
+        `<span class="inline-block bg-orange-100 dark:bg-orange-800 text-orange-800 dark:text-orange-200 px-2 py-1 rounded text-sm mr-2 mb-1">${lang}</span>`
       ).join('');
     }
 
@@ -434,7 +534,7 @@
 
       const currencyList = Object.values(currencies);
       container.innerHTML = currencyList.map(currency => 
-        `<span class="inline-block bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 px-2 py-1 rounded text-sm mr-2 mb-1">${currency.name} (${currency.symbol})</span>`
+        `<span class="inline-block bg-orange-100 dark:bg-orange-800 text-orange-800 dark:text-orange-200 px-2 py-1 rounded text-sm mr-2 mb-1">${currency.name} (${currency.symbol})</span>`
       ).join('');
     }
 
@@ -481,6 +581,57 @@
       container.innerHTML = borders.map(border => 
         `<span class="inline-block bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 px-3 py-1 rounded-full text-sm border cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors duration-200">${border}</span>`
       ).join('');
+    }
+
+    private updateCarInfo(car?: { side: string; signs?: string[] }): void {
+      const sideElement = document.getElementById('modal-car-side');
+      const signsElement = document.getElementById('modal-car-signs');
+      
+      if (sideElement) {
+        if (car?.side) {
+          const sideText = car.side === 'right' ? 'Right-hand traffic' : 'Left-hand traffic';
+          sideElement.textContent = sideText;
+        } else {
+          sideElement.textContent = 'N/A';
+        }
+      }
+
+      if (signsElement) {
+        if (car?.signs && car.signs.length > 0) {
+          signsElement.textContent = car.signs.join(', ');
+        } else {
+          signsElement.textContent = 'N/A';
+        }
+      }
+    }
+
+    private updatePostalCode(postalCode?: { format: string; regex: string }): void {
+      const element = document.getElementById('modal-postal-code');
+      if (!element) return;
+
+      if (postalCode?.format) {
+        element.innerHTML = `
+          <div class="mb-1">Format: <span class="font-bold">${postalCode.format}</span></div>
+          <div class="text-xs opacity-75">Regex: ${postalCode.regex}</div>
+        `;
+      } else {
+        element.textContent = 'No standard postal code format';
+      }
+    }
+
+    private updateCoatOfArms(coatOfArms?: { png?: string; svg?: string }): void {
+      const card = document.getElementById('modal-coat-of-arms-card');
+      const image = document.getElementById('modal-coat-of-arms') as HTMLImageElement;
+      
+      if (!card || !image) return;
+
+      if (coatOfArms?.svg || coatOfArms?.png) {
+        card.classList.remove('hidden');
+        image.src = coatOfArms.svg || coatOfArms.png || '';
+        image.alt = 'National Coat of Arms';
+      } else {
+        card.classList.add('hidden');
+      }
     }
 
     private updateFavoriteButton(): void {
