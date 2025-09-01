@@ -265,12 +265,19 @@ let error = null;
             <!-- Options will be generated dynamically -->
           </div>
 
-          <!-- Answer Feedback -->
-          <div id="answer-feedback" class="hidden mt-6 p-4 rounded-lg border">
-            <div id="feedback-content" class="text-center">
-              <!-- Feedback will be shown here -->
+          <!-- Fixed Height Container for Feedback to prevent layout shift -->
+          <div class="mt-6 h-32">
+            <!-- Answer Feedback -->
+            <div id="answer-feedback" class="hidden h-full p-4 rounded-lg border">
+              <div id="feedback-content" class="text-center text-sm">
+                <!-- Feedback will be shown here -->
+              </div>
             </div>
-            <button id="next-question-btn" class="w-full mt-4 px-4 py-3 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors font-medium">
+          </div>
+
+          <!-- Next Button - Fixed Position -->
+          <div class="mt-4">
+            <button id="next-question-btn" class="hidden w-full px-4 py-3 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors font-medium">
               <span id="next-btn-text">Next Question</span>
               <i data-lucide="arrow-right" class="w-4 h-4 ml-2 inline"></i>
             </button>
@@ -641,10 +648,10 @@ let error = null;
             comparison = a.name.common.localeCompare(b.name.common);
             break;
           case 'population':
-            comparison = a.population - b.population;
+            comparison = (a.population || 0) - (b.population || 0);
             break;
           case 'area':
-            comparison = a.area - b.area;
+            comparison = (a.area || 0) - (b.area || 0);
             break;
         }
 
@@ -1149,30 +1156,30 @@ let error = null;
 
       // Update feedback content
       if (isCorrect) {
-        feedback.className = 'mt-6 p-4 rounded-lg border border-green-300 dark:border-green-600 bg-green-50 dark:bg-green-900/20';
+        feedback.className = 'hidden h-full p-4 rounded-lg border border-green-300 dark:border-green-600 bg-green-50 dark:bg-green-900/20';
         feedbackContent.innerHTML = `
-          <div class="flex items-center justify-center mb-2">
-            <i data-lucide="check-circle" class="w-6 h-6 text-green-600 dark:text-green-400 mr-2"></i>
+          <div class="flex items-center justify-center mb-1">
+            <i data-lucide="check-circle" class="w-5 h-5 text-green-600 dark:text-green-400 mr-2"></i>
             <span class="text-green-800 dark:text-green-200 font-semibold">Correct!</span>
           </div>
-          <p class="text-sm text-green-700 dark:text-green-300">
+          <p class="text-xs text-green-700 dark:text-green-300">
             ${this.quizType === 'flags' 
-              ? `Yes, that's the flag of ${country.name?.common}!`
-              : `Yes, ${country.capital?.[0]} is the capital of ${country.name?.common}!`
+              ? `Yes, that's ${country.name?.common}!`
+              : `Yes, ${country.capital?.[0]} is the capital!`
             }
           </p>
         `;
       } else {
-        feedback.className = 'mt-6 p-4 rounded-lg border border-red-300 dark:border-red-600 bg-red-50 dark:bg-red-900/20';
+        feedback.className = 'hidden h-full p-4 rounded-lg border border-red-300 dark:border-red-600 bg-red-50 dark:bg-red-900/20';
         feedbackContent.innerHTML = `
-          <div class="flex items-center justify-center mb-2">
-            <i data-lucide="x-circle" class="w-6 h-6 text-red-600 dark:text-red-400 mr-2"></i>
+          <div class="flex items-center justify-center mb-1">
+            <i data-lucide="x-circle" class="w-5 h-5 text-red-600 dark:text-red-400 mr-2"></i>
             <span class="text-red-800 dark:text-red-200 font-semibold">Not quite!</span>
           </div>
-          <p class="text-sm text-red-700 dark:text-red-300">
+          <p class="text-xs text-red-700 dark:text-red-300">
             ${this.quizType === 'flags' 
-              ? `That's the flag of ${country.name?.common}, not your selected answer.`
-              : `The capital of ${country.name?.common} is ${country.capital?.[0]}.`
+              ? `Correct answer: ${country.name?.common}`
+              : `Correct answer: ${country.capital?.[0]}`
             }
           </p>
         `;
@@ -1185,8 +1192,9 @@ let error = null;
         nextBtnText.textContent = `Next Question (${this.currentQuizQuestion + 2}/${this.totalQuizQuestions})`;
       }
 
-      // Show feedback
+      // Show feedback and button
       feedback.classList.remove('hidden');
+      nextBtn.classList.remove('hidden');
       
       // Re-initialize Lucide icons
       if (typeof lucide !== 'undefined') {
@@ -1195,9 +1203,12 @@ let error = null;
     }
 
     private nextQuestion(): void {
-      // Hide feedback
+      // Hide feedback and button
       const feedback = document.getElementById('answer-feedback');
+      const nextBtn = document.getElementById('next-question-btn');
+      
       feedback?.classList.add('hidden');
+      nextBtn?.classList.add('hidden');
 
       // Move to next question
       this.currentQuizQuestion++;
