@@ -264,22 +264,48 @@ let error = null;
           <div class="space-y-3" id="quiz-options">
             <!-- Options will be generated dynamically -->
           </div>
+
+          <!-- Answer Feedback -->
+          <div id="answer-feedback" class="hidden mt-6 p-4 rounded-lg border">
+            <div id="feedback-content" class="text-center">
+              <!-- Feedback will be shown here -->
+            </div>
+            <button id="next-question-btn" class="w-full mt-4 px-4 py-3 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors font-medium">
+              <span id="next-btn-text">Next Question</span>
+              <i data-lucide="arrow-right" class="w-4 h-4 ml-2 inline"></i>
+            </button>
+          </div>
         </div>
 
         <!-- Quiz Results Screen -->
-        <div id="quiz-results" class="hidden text-center">
+        <div id="quiz-results" class="hidden text-center relative">
+          <!-- Confetti Container -->
+          <div id="confetti-container" class="absolute inset-0 pointer-events-none overflow-hidden"></div>
+          
           <div class="mb-6">
-            <div class="w-20 h-20 bg-gradient-to-br from-green-500 to-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
-              <i data-lucide="trophy" class="w-10 h-10 text-white"></i>
+            <!-- Achievement Badge -->
+            <div id="achievement-badge" class="w-24 h-24 mx-auto mb-4 relative">
+              <div class="w-full h-full bg-gradient-to-br rounded-full flex items-center justify-center shadow-lg">
+                <i data-lucide="trophy" class="w-12 h-12 text-white"></i>
+              </div>
+              <!-- Score Badge -->
+              <div id="score-badge" class="absolute -bottom-2 -right-2 w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white shadow-md">
+                <span id="badge-grade">A+</span>
+              </div>
             </div>
+            
             <h4 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">Quiz Complete!</h4>
-            <p class="text-lg">
-              <span class="text-2xl font-bold text-primary-600 dark:text-primary-400" id="quiz-final-score">0</span>
-              <span class="text-gray-600 dark:text-gray-400">out of</span>
-              <span class="text-2xl font-bold text-gray-900 dark:text-white" id="quiz-total-final">10</span>
-            </p>
-            <p class="text-lg font-medium text-primary-600 dark:text-primary-400 mb-2" id="quiz-score-percentage">0%</p>
-            <p class="text-gray-600 dark:text-gray-400 mt-2" id="quiz-score-message"></p>
+            
+            <!-- Score Display -->
+            <div class="bg-gray-50 dark:bg-gray-800 rounded-lg p-4 mb-4">
+              <p class="text-3xl font-bold mb-2">
+                <span class="text-primary-600 dark:text-primary-400" id="quiz-final-score">0</span>
+                <span class="text-gray-400 text-lg mx-2">/</span>
+                <span class="text-gray-600 dark:text-gray-400" id="quiz-total-final">10</span>
+              </p>
+              <p class="text-2xl font-bold text-accent-600 dark:text-accent-400 mb-2" id="quiz-score-percentage">0%</p>
+              <p class="text-gray-600 dark:text-gray-400" id="quiz-score-message"></p>
+            </div>
           </div>
           
           <div class="space-y-3">
@@ -413,6 +439,12 @@ let error = null;
 
       quizRestart?.addEventListener('click', () => {
         this.resetQuiz();
+      });
+
+      // Next question button
+      const nextQuestionBtn = document.getElementById('next-question-btn');
+      nextQuestionBtn?.addEventListener('click', () => {
+        this.nextQuestion();
       });
     }
 
@@ -1078,12 +1110,16 @@ let error = null;
     }
 
     private handleQuizAnswer(isCorrect: boolean, selectedButton: HTMLButtonElement): void {
+      console.log(`Answer ${isCorrect ? 'correct' : 'incorrect'}`);
+      
       // Disable all option buttons
       const optionButtons = document.querySelectorAll('.quiz-option');
       optionButtons.forEach(button => {
         button.setAttribute('disabled', 'true');
       });
 
+      const currentCountry = this.quizCountries[this.currentQuizQuestion];
+      
       // Show correct/incorrect styling
       if (isCorrect) {
         selectedButton.classList.add('bg-green-100', 'dark:bg-green-800', 'border-green-300', 'dark:border-green-600', 'text-green-800', 'dark:text-green-200');
@@ -1092,7 +1128,6 @@ let error = null;
         selectedButton.classList.add('bg-red-100', 'dark:bg-red-800', 'border-red-300', 'dark:border-red-600', 'text-red-800', 'dark:text-red-200');
         
         // Highlight correct answer
-        const currentCountry = this.quizCountries[this.currentQuizQuestion];
         optionButtons.forEach(button => {
           if (button.dataset.country === currentCountry.name?.common) {
             button.classList.add('bg-green-100', 'dark:bg-green-800', 'border-green-300', 'dark:border-green-600', 'text-green-800', 'dark:text-green-200');
@@ -1100,11 +1135,73 @@ let error = null;
         });
       }
 
-      // Move to next question after delay
-      setTimeout(() => {
-        this.currentQuizQuestion++;
-        this.showQuizQuestion();
-      }, 1500);
+      // Show feedback
+      this.showAnswerFeedback(isCorrect, currentCountry);
+    }
+
+    private showAnswerFeedback(isCorrect: boolean, country: any): void {
+      const feedback = document.getElementById('answer-feedback');
+      const feedbackContent = document.getElementById('feedback-content');
+      const nextBtn = document.getElementById('next-question-btn');
+      const nextBtnText = document.getElementById('next-btn-text');
+
+      if (!feedback || !feedbackContent || !nextBtn || !nextBtnText) return;
+
+      // Update feedback content
+      if (isCorrect) {
+        feedback.className = 'mt-6 p-4 rounded-lg border border-green-300 dark:border-green-600 bg-green-50 dark:bg-green-900/20';
+        feedbackContent.innerHTML = `
+          <div class="flex items-center justify-center mb-2">
+            <i data-lucide="check-circle" class="w-6 h-6 text-green-600 dark:text-green-400 mr-2"></i>
+            <span class="text-green-800 dark:text-green-200 font-semibold">Correct!</span>
+          </div>
+          <p class="text-sm text-green-700 dark:text-green-300">
+            ${this.quizType === 'flags' 
+              ? `Yes, that's the flag of ${country.name?.common}!`
+              : `Yes, ${country.capital?.[0]} is the capital of ${country.name?.common}!`
+            }
+          </p>
+        `;
+      } else {
+        feedback.className = 'mt-6 p-4 rounded-lg border border-red-300 dark:border-red-600 bg-red-50 dark:bg-red-900/20';
+        feedbackContent.innerHTML = `
+          <div class="flex items-center justify-center mb-2">
+            <i data-lucide="x-circle" class="w-6 h-6 text-red-600 dark:text-red-400 mr-2"></i>
+            <span class="text-red-800 dark:text-red-200 font-semibold">Not quite!</span>
+          </div>
+          <p class="text-sm text-red-700 dark:text-red-300">
+            ${this.quizType === 'flags' 
+              ? `That's the flag of ${country.name?.common}, not your selected answer.`
+              : `The capital of ${country.name?.common} is ${country.capital?.[0]}.`
+            }
+          </p>
+        `;
+      }
+
+      // Update next button text
+      if (this.currentQuizQuestion + 1 >= this.totalQuizQuestions) {
+        nextBtnText.textContent = 'View Results';
+      } else {
+        nextBtnText.textContent = `Next Question (${this.currentQuizQuestion + 2}/${this.totalQuizQuestions})`;
+      }
+
+      // Show feedback
+      feedback.classList.remove('hidden');
+      
+      // Re-initialize Lucide icons
+      if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
+      }
+    }
+
+    private nextQuestion(): void {
+      // Hide feedback
+      const feedback = document.getElementById('answer-feedback');
+      feedback?.classList.add('hidden');
+
+      // Move to next question
+      this.currentQuizQuestion++;
+      this.showQuizQuestion();
     }
 
     private showQuizResults(): void {
@@ -1114,6 +1211,9 @@ let error = null;
       const totalFinal = document.getElementById('quiz-total-final');
       const scorePercentage = document.getElementById('quiz-score-percentage');
       const scoreMessage = document.getElementById('quiz-score-message');
+      const achievementBadge = document.getElementById('achievement-badge');
+      const scoreBadge = document.getElementById('score-badge');
+      const badgeGrade = document.getElementById('badge-grade');
 
       if (!quizGame || !quizResults || !finalScore || !scorePercentage || !scoreMessage || !totalFinal) return;
 
@@ -1128,19 +1228,107 @@ let error = null;
       totalFinal.textContent = `${this.totalQuizQuestions}`;
       scorePercentage.textContent = `${percentage}%`;
 
-      // Set message based on performance
+      // Set achievement badge and message based on performance
       let message = '';
+      let badgeColor = '';
+      let achievementColor = '';
+      let grade = '';
+      
       if (percentage >= 90) {
         message = 'Outstanding! You\'re a geography expert! 🌟';
+        badgeColor = 'bg-gradient-to-br from-yellow-400 to-yellow-600';
+        achievementColor = 'bg-gradient-to-br from-yellow-500 to-yellow-700';
+        grade = 'A+';
+        this.triggerConfetti();
+      } else if (percentage >= 80) {
+        message = 'Excellent work! You really know your countries! 🏆';
+        badgeColor = 'bg-gradient-to-br from-purple-400 to-purple-600';
+        achievementColor = 'bg-gradient-to-br from-purple-500 to-purple-700';
+        grade = 'A';
+        this.triggerConfetti();
       } else if (percentage >= 70) {
         message = 'Great job! You know your countries well! 🎉';
+        badgeColor = 'bg-gradient-to-br from-green-400 to-green-600';
+        achievementColor = 'bg-gradient-to-br from-green-500 to-green-700';
+        grade = 'B+';
+      } else if (percentage >= 60) {
+        message = 'Good work! Keep learning about our world! 👍';
+        badgeColor = 'bg-gradient-to-br from-blue-400 to-blue-600';
+        achievementColor = 'bg-gradient-to-br from-blue-500 to-blue-700';
+        grade = 'B';
       } else if (percentage >= 50) {
-        message = 'Good effort! Keep exploring to learn more! 👍';
+        message = 'Good effort! Keep exploring to learn more! 📚';
+        badgeColor = 'bg-gradient-to-br from-indigo-400 to-indigo-600';
+        achievementColor = 'bg-gradient-to-br from-indigo-500 to-indigo-700';
+        grade = 'C+';
       } else {
-        message = 'Keep practicing! Geography is fascinating! 📚';
+        message = 'Keep practicing! Geography is fascinating! 🌍';
+        badgeColor = 'bg-gradient-to-br from-gray-400 to-gray-600';
+        achievementColor = 'bg-gradient-to-br from-gray-500 to-gray-700';
+        grade = 'C';
+      }
+
+      // Update achievement badge colors
+      if (achievementBadge) {
+        const badgeDiv = achievementBadge.querySelector('div');
+        if (badgeDiv) {
+          badgeDiv.className = `w-full h-full ${achievementColor} rounded-full flex items-center justify-center shadow-lg`;
+        }
+      }
+
+      // Update score badge
+      if (scoreBadge && badgeGrade) {
+        scoreBadge.className = `absolute -bottom-2 -right-2 w-8 h-8 ${badgeColor} rounded-full flex items-center justify-center text-xs font-bold text-white shadow-md`;
+        badgeGrade.textContent = grade;
       }
 
       scoreMessage.textContent = message;
+
+      // Re-initialize Lucide icons
+      if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
+      }
+    }
+
+    private triggerConfetti(): void {
+      const container = document.getElementById('confetti-container');
+      if (!container) return;
+
+      // Clear previous confetti
+      container.innerHTML = '';
+
+      // Create confetti pieces
+      for (let i = 0; i < 50; i++) {
+        const confetti = document.createElement('div');
+        confetti.className = 'absolute w-2 h-2 opacity-0';
+        
+        // Random colors
+        const colors = ['bg-yellow-400', 'bg-purple-500', 'bg-green-500', 'bg-blue-500', 'bg-red-500', 'bg-pink-500'];
+        confetti.classList.add(colors[Math.floor(Math.random() * colors.length)]);
+        
+        // Random starting position
+        confetti.style.left = Math.random() * 100 + '%';
+        confetti.style.top = '-10px';
+        
+        // Random delay and duration
+        const delay = Math.random() * 1000;
+        const duration = 2000 + Math.random() * 1000;
+        
+        container.appendChild(confetti);
+        
+        // Animate confetti
+        setTimeout(() => {
+          confetti.style.opacity = '1';
+          confetti.style.transition = `all ${duration}ms ease-out`;
+          confetti.style.top = '100%';
+          confetti.style.transform = `rotate(${Math.random() * 360}deg) translateX(${Math.random() * 200 - 100}px)`;
+          
+          // Remove confetti after animation
+          setTimeout(() => {
+            confetti.remove();
+          }, duration);
+        }, delay);
+      }
     }
 
     private resetQuiz(): void {
