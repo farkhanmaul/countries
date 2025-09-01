@@ -13,8 +13,10 @@ A comprehensive, modern web application built with **Astro**, **TypeScript**, an
 ### 🏠 **Country Explorer**
 - **🔍 Advanced Search**: Multi-type search by country name, capital, currency, language, or demonym
 - **🌏 Regional Filtering**: Filter countries by continent/region
-- **📊 Smart Sorting**: Sort by name, population, or area with ascending/descending options  
-- **🖼️ Rich Information**: Detailed country cards with flags, population, capitals, currencies, and languages
+- **📊 Enhanced Sorting**: Sort by name, population, area, or population density with visual asc/desc indicators
+- **📈 Population Density**: Smart calculation and display with optimized formatting (people/km²)
+- **🖼️ Rich Information**: Detailed country cards with flags, population, area, capitals, currencies, and languages
+- **💖 Favorites System**: Save and manage favorite countries with localStorage persistence
 - **📱 Responsive Design**: Optimized for desktop, tablet, and mobile devices
 - **🌙 Dark Mode**: Complete theme switching with system preference detection
 
@@ -26,6 +28,13 @@ A comprehensive, modern web application built with **Astro**, **TypeScript**, an
 - **🎉 Celebrations**: Confetti animations for high scores (80%+ and 90%+)
 - **💡 Smart Feedback**: Detailed explanations for correct and incorrect answers
 - **▶️ User-Friendly Flow**: Clear next button with progress indication
+
+### 🎨 **Professional Modal Design**
+- **🌈 Gradient Header**: Modern gradient backgrounds with elegant styling
+- **🏳️ Enhanced Flag Display**: Glow effects and hover animations with gradient borders
+- **📋 Comprehensive Data Cards**: Color-coded sections for different information categories
+- **🎯 Interactive Elements**: Professional action buttons with smooth hover effects
+- **🌍 External Maps Integration**: Direct links to Google Maps for geographical exploration
 
 ### 🛠️ **Technical Excellence**
 - **⚡ Real-time Search**: Instant results as you type
@@ -100,13 +109,20 @@ public/
 This project integrates with the **free, open-source REST Countries API** that provides comprehensive country data without requiring API keys or registration.
 
 #### **Implemented Endpoints:**
-- `GET /v3.1/all` - Fetch all countries
+- `GET /v3.1/all?fields=name,capital,region,population,area,flags,languages,currencies,cca3` - Fetch all countries with optimized field selection
 - `GET /v3.1/name/{name}` - Search by country name
 - `GET /v3.1/region/{region}` - Filter by region
 - `GET /v3.1/capital/{capital}` - Search by capital city
 - `GET /v3.1/currency/{currency}` - Search by currency
 - `GET /v3.1/lang/{language}` - Search by language
 - `GET /v3.1/demonym/{demonym}` - Search by demonym (nationality)
+
+#### **Data Fields Utilized:**
+- **Core Info**: name, capital, region, population, area
+- **Visual**: flags (SVG/PNG), coat of arms
+- **Cultural**: languages, currencies, demonyms
+- **Geographical**: timezones, borders, landlocked status
+- **Official**: ISO codes (Alpha-2/Alpha-3), UN membership, independence status
 
 #### **Available But Not Yet Implemented:**
 - Alpha-2/Alpha-3 country code search
@@ -467,6 +483,23 @@ This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) 
 - **[Astro](https://astro.build/)** - Amazing web framework for performance
 - **[Tailwind CSS](https://tailwindcss.com/)** - Utility-first CSS framework
 - **Country flag images** - Provided by REST Countries API
+
+## 🆕 Recent Updates
+
+### **v2.1 - Enhanced Sorting & Professional Modal Design**
+- ✅ **Fixed Sorting Issues**: Area and population density sorting now work correctly
+- 🎨 **Enhanced Modal Design**: Professional gradient headers, glow effects, and modern styling
+- 📊 **Visual Sort Indicators**: Sort buttons now clearly show ascending/descending state
+- 📈 **Population Density**: Added smart calculation and display formatting
+- 🧹 **Code Quality**: Cleaned up debugging statements and optimized performance
+
+### **Technical Improvements**
+- **API Optimization**: Added `area` field to API query parameters for proper sorting functionality
+- **Type Safety**: Updated TypeScript interfaces to include density sorting option
+- **UI/UX Enhancement**: Improved visual feedback with gradient backgrounds and hover animations
+- **Performance**: Removed unnecessary console logging for production readiness
+
+---
 
 ## 💡 FAQ
 

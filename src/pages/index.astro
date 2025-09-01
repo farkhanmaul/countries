@@ -493,40 +493,30 @@ let error = null;
     }
 
     private async loadAllCountries(): Promise<void> {
-      console.log('loadAllCountries called');
       if (this.isLoading) {
-        console.log('Already loading, skipping');
         return;
       }
 
-      console.log('Starting to load all countries');
       this.showLoadingState();
       this.isLoading = true;
 
       try {
-        console.log('Fetching countries from API...');
         this.allCountries = await fetchAllCountries();
-        console.log('Fetched', this.allCountries.length, 'countries');
         
         this.filteredCountries = [...this.allCountries];
-        console.log('Set filtered countries:', this.filteredCountries.length);
         
         // Check if using fallback data
         if (this.allCountries.length === 8) {
-          console.log('Using fallback data, showing banner');
           this.showApiFallbackBanner();
         }
         
         this.hideWelcomeMessage();
-        console.log('About to render countries');
         this.renderCountries();
         this.updateResultsCount();
         this.hideLoadingState();
         this.showResults();
         
-        console.log('Countries loaded and displayed successfully');
       } catch (error) {
-        console.error('Failed to load countries:', error);
         this.showErrorState(error instanceof Error ? error.message : 'Failed to load countries');
       } finally {
         this.isLoading = false;
@@ -534,41 +524,33 @@ let error = null;
     }
 
     private async handleSearch(query: string, searchType: string = 'name'): Promise<void> {
-      console.log('handleSearch called with:', { query, searchType });
       this.currentFilters.search = query;
 
       if (!query.trim()) {
         // If search is empty, show all countries or current filtered results
         if (this.allCountries.length === 0) {
-          console.log('Loading all countries for empty search');
           await this.loadAllCountries();
         } else {
-          console.log('Applying filters for empty search');
           this.applyFilters();
         }
         return;
       }
 
       // Show loading state
-      console.log('Setting loading state for search');
       this.setLoading(true);
 
       try {
         // If using advanced search types, fetch specific data
         if (searchType !== 'name') {
-          console.log('Using advanced search for type:', searchType);
           await this.handleAdvancedSearch(query, searchType);
         } else {
           // Default name search
-          console.log('Using default name search');
           if (this.allCountries.length === 0) {
-            console.log('Loading all countries first');
             await this.loadAllCountries();
           }
           this.applyFilters();
         }
       } catch (error) {
-        console.error('Search error:', error);
         this.showErrorState('Search failed. Please try again.');
       } finally {
         this.setLoading(false);
@@ -609,7 +591,6 @@ let error = null;
         this.showResults();
 
       } catch (error) {
-        console.error(`Advanced search (${searchType}) failed:`, error);
         this.showErrorState(`No results found for "${query}" in ${searchType}.`);
       }
     }
@@ -673,13 +654,11 @@ let error = null;
     }
 
     private renderCountries(): void {
-      console.log('renderCountries called with', this.filteredCountries.length, 'countries');
       
       const container = document.getElementById('countries-container');
       const grid = document.getElementById('countries-grid');
       
       if (!container || !grid) {
-        console.error('Countries container or grid not found');
         return;
       }
 
@@ -695,12 +674,10 @@ let error = null;
       grid.innerHTML = '';
       
       if (this.filteredCountries.length === 0) {
-        console.log('No countries to display, showing no results state');
         this.showNoResultsState();
         return;
       }
 
-      console.log('Rendering', this.filteredCountries.length, 'countries');
 
       // Add countries
       this.filteredCountries.forEach((country, index) => {
@@ -949,18 +926,11 @@ let error = null;
     private totalQuizQuestions: number = 10;
 
     private openQuiz(): void {
-      console.log('Opening quiz modal...');
       const quizModal = document.getElementById('quiz-modal');
       const quizStart = document.getElementById('quiz-start');
       const quizGame = document.getElementById('quiz-game');
       const quizResults = document.getElementById('quiz-results');
 
-      console.log('Quiz elements:', {
-        modal: !!quizModal,
-        start: !!quizStart,
-        game: !!quizGame,
-        results: !!quizResults
-      });
 
       if (quizModal && quizStart && quizGame && quizResults) {
         // Show modal and start screen
@@ -978,9 +948,7 @@ let error = null;
           lucide.createIcons();
         }
 
-        console.log('Quiz modal opened successfully');
       } else {
-        console.error('Failed to find quiz modal elements');
       }
     }
 
@@ -990,16 +958,13 @@ let error = null;
     }
 
     private async startQuiz(type: 'flags' | 'capitals'): void {
-      console.log(`Starting ${type} quiz...`);
       this.quizType = type;
 
       // Load countries if not already loaded
       if (this.allCountries.length === 0) {
-        console.log('Loading countries for quiz...');
         await this.loadAllCountries();
       }
 
-      console.log(`Total countries available: ${this.allCountries.length}`);
 
       // Filter countries with required data
       if (type === 'flags') {
@@ -1012,10 +977,8 @@ let error = null;
         ).slice(0, 50);
       }
 
-      console.log(`Filtered quiz countries: ${this.quizCountries.length}`);
 
       if (this.quizCountries.length < 4) {
-        console.error('Not enough countries for quiz');
         alert('Not enough country data available for quiz. Please load countries first.');
         return;
       }
@@ -1035,7 +998,6 @@ let error = null;
       this.quizScore = 0;
 
       // Start first question
-      console.log('Starting first question...');
       this.showQuizQuestion();
     }
 
@@ -1049,16 +1011,13 @@ let error = null;
     }
 
     private showQuizQuestion(): void {
-      console.log(`Showing question ${this.currentQuizQuestion + 1} of ${this.totalQuizQuestions}`);
       
       if (this.currentQuizQuestion >= this.totalQuizQuestions) {
-        console.log('Quiz completed, showing results');
         this.showQuizResults();
         return;
       }
 
       const currentCountry = this.quizCountries[this.currentQuizQuestion];
-      console.log('Current country:', currentCountry?.name?.common);
       
       const questionNumber = document.getElementById('quiz-question-number');
       const currentScore = document.getElementById('quiz-current-score');
@@ -1066,16 +1025,8 @@ let error = null;
       const questionContainer = document.getElementById('quiz-question');
       const optionsContainer = document.getElementById('quiz-options');
 
-      console.log('Quiz question elements:', {
-        questionNumber: !!questionNumber,
-        currentScore: !!currentScore,
-        progressBar: !!progressBar,
-        questionContainer: !!questionContainer,
-        optionsContainer: !!optionsContainer
-      });
 
       if (!questionNumber || !progressBar || !questionContainer || !optionsContainer || !currentScore) {
-        console.error('Missing quiz question elements');
         return;
       }
 
@@ -1154,7 +1105,6 @@ let error = null;
     }
 
     private handleQuizAnswer(isCorrect: boolean, selectedButton: HTMLButtonElement): void {
-      console.log(`Answer ${isCorrect ? 'correct' : 'incorrect'}`);
       
       // Disable all option buttons
       const optionButtons = document.querySelectorAll('.quiz-option');

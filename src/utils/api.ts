@@ -16,19 +16,15 @@ export async function fetchAllCountries(): Promise<Country[]> {
 
   for (let i = 0; i < strategies.length; i++) {
     try {
-      console.log(`Trying API strategy ${i + 1}...`);
       const response = await strategies[i]();
       
       if (!response.ok) {
-        console.warn(`Strategy ${i + 1} failed with status: ${response.status}`);
         continue;
       }
       
       const countries: Country[] = await response.json();
-      console.log(`Successfully loaded ${countries.length} countries`);
       return countries.sort((a, b) => a.name.common.localeCompare(b.name.common));
     } catch (error) {
-      console.warn(`Strategy ${i + 1} failed:`, error);
       if (i === strategies.length - 1) {
         throw new Error(`All API strategies failed. Last error: ${error}`);
       }
@@ -36,7 +32,6 @@ export async function fetchAllCountries(): Promise<Country[]> {
   }
 
   // Last resort: return fallback data
-  console.warn('All API strategies failed, using fallback data');
   return fallbackCountries as Country[];
 }
 
@@ -53,7 +48,6 @@ export async function fetchCountryByName(name: string): Promise<Country[]> {
     
     return await response.json();
   } catch (error) {
-    console.error('Error fetching country by name:', error);
     throw error;
   }
 }
@@ -68,7 +62,6 @@ export async function fetchCountriesByRegion(region: string): Promise<Country[]>
     
     return await response.json();
   } catch (error) {
-    console.error('Error fetching countries by region:', error);
     throw error;
   }
 }
@@ -86,7 +79,6 @@ export async function fetchCountriesByCurrency(currency: string): Promise<Countr
         return await response.json();
       }
     } catch (error) {
-      console.warn(`Currency search strategy ${i + 1} failed:`, error);
     }
   }
   
@@ -106,7 +98,6 @@ export async function fetchCountriesByLanguage(language: string): Promise<Countr
         return await response.json();
       }
     } catch (error) {
-      console.warn(`Language search strategy ${i + 1} failed:`, error);
     }
   }
   
@@ -126,7 +117,6 @@ export async function fetchCountriesByCapital(capital: string): Promise<Country[
         return await response.json();
       }
     } catch (error) {
-      console.warn(`Capital search strategy ${i + 1} failed:`, error);
     }
   }
   
@@ -146,7 +136,6 @@ export async function fetchCountriesByDemonym(demonym: string): Promise<Country[
         return await response.json();
       }
     } catch (error) {
-      console.warn(`Demonym search strategy ${i + 1} failed:`, error);
     }
   }
   
@@ -166,7 +155,6 @@ export async function fetchIndependentCountries(independent: boolean = true): Pr
         return await response.json();
       }
     } catch (error) {
-      console.warn(`Independent countries strategy ${i + 1} failed:`, error);
     }
   }
   
