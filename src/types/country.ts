@@ -88,7 +88,7 @@ export interface Country {
 export interface FilterOptions {
   search: string;
   region: string;
-  sortBy: 'name' | 'population' | 'area';
+  sortBy: 'name' | 'population' | 'area' | 'density';
   sortOrder: 'asc' | 'desc';
 }
 

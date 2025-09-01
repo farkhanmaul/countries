@@ -371,7 +371,6 @@ let error = null;
       // Search events
       document.addEventListener('country-search', (e: Event) => {
         const customEvent = e as CustomEvent;
-        console.log('Search event received:', customEvent.detail);
         this.handleSearch(customEvent.detail.query, customEvent.detail.searchType || 'name');
       });
 
@@ -651,7 +650,9 @@ let error = null;
             comparison = (a.population || 0) - (b.population || 0);
             break;
           case 'area':
-            comparison = (a.area || 0) - (b.area || 0);
+            const areaA = a.area || 0;
+            const areaB = b.area || 0;
+            comparison = areaA - areaB;
             break;
           case 'density':
             // Calculate population density (people per km²)
@@ -762,6 +763,18 @@ let error = null;
         }
         return 'N/A';
       };
+      
+      const getPopulationDensity = (population: number, area: number): string => {
+        if (!area || area <= 0) return 'N/A';
+        const density = population / area;
+        if (density < 1) {
+          return `${density.toFixed(2)} people/km²`;
+        } else if (density < 1000) {
+          return `${Math.round(density)} people/km²`;
+        } else {
+          return `${(density / 1000).toFixed(1)}K people/km²`;
+        }
+      };
 
       return `
         <div class="${viewMode === 'list' ? 'w-16 h-12' : 'w-full h-48'} flex-shrink-0 overflow-hidden ${viewMode === 'grid' ? 'rounded-t-lg' : 'rounded-lg'}">
@@ -798,7 +811,25 @@ let error = null;
               <span class="font-medium mr-2">Population:</span>
               <span>${formatNumber(country.population)}</span>
             </div>
+            
+            ${viewMode === 'list' ? `
+              <div class="flex items-center text-gray-700 dark:text-gray-300">
+                <span class="font-medium mr-2">Area:</span>
+                <span>${country.area ? `${formatNumber(country.area)} km²` : 'N/A'}</span>
+              </div>
+            ` : ''}
+            
+            <div class="flex items-center text-gray-700 dark:text-gray-300">
+              <span class="font-medium mr-2">Density:</span>
+              <span>${getPopulationDensity(country.population, country.area)}</span>
+            </div>
+            
             ${viewMode === 'grid' ? `
+              <div class="flex items-center text-gray-700 dark:text-gray-300">
+                <span class="font-medium mr-2">Area:</span>
+                <span>${country.area ? `${formatNumber(country.area)} km²` : 'N/A'}</span>
+              </div>
+              
               <div class="flex items-center text-gray-700 dark:text-gray-300">
                 <span class="font-medium mr-2">Language:</span>
                 <span>${getPrimaryLanguage(country.languages)}</span>

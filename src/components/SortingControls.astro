@@ -23,11 +23,12 @@
   <button
     id="sort-order-toggle"
     type="button"
-    class="inline-flex items-center px-3 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:focus:ring-primary-400 dark:focus:border-primary-400 transition-colors duration-200"
+    class="inline-flex items-center gap-2 px-3 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:focus:ring-primary-400 dark:focus:border-primary-400 transition-all duration-200"
     data-order="asc"
     title="Toggle sort order"
   >
     <i data-lucide="arrow-up" id="sort-order-icon" class="w-4 h-4 transform transition-transform duration-200"></i>
+    <span id="sort-order-text">Asc</span>
   </button>
 </div>
 
@@ -36,12 +37,14 @@
     private sortBySelect: HTMLSelectElement | null;
     private sortOrderButton: HTMLButtonElement | null;
     private sortOrderIcon: HTMLElement | null;
+    private sortOrderText: HTMLElement | null;
     private currentOrder: 'asc' | 'desc' = 'asc';
 
     constructor() {
       this.sortBySelect = document.getElementById('sort-by') as HTMLSelectElement;
       this.sortOrderButton = document.getElementById('sort-order-toggle') as HTMLButtonElement;
       this.sortOrderIcon = document.getElementById('sort-order-icon') as HTMLElement;
+      this.sortOrderText = document.getElementById('sort-order-text') as HTMLElement;
       this.init();
     }
 
@@ -64,12 +67,18 @@
     }
 
     private updateOrderButton(): void {
-      if (!this.sortOrderIcon || !this.sortOrderButton) return;
+      if (!this.sortOrderIcon || !this.sortOrderButton || !this.sortOrderText) return;
 
       if (this.currentOrder === 'asc') {
         this.sortOrderIcon.setAttribute('data-lucide', 'arrow-up');
+        this.sortOrderText.textContent = 'Asc';
+        this.sortOrderButton.classList.remove('bg-primary-50', 'border-primary-300', 'text-primary-700');
+        this.sortOrderButton.classList.add('bg-white', 'border-gray-300', 'text-gray-700');
       } else {
         this.sortOrderIcon.setAttribute('data-lucide', 'arrow-down');
+        this.sortOrderText.textContent = 'Desc';
+        this.sortOrderButton.classList.remove('bg-white', 'border-gray-300', 'text-gray-700');
+        this.sortOrderButton.classList.add('bg-primary-50', 'border-primary-300', 'text-primary-700');
       }
 
       this.sortOrderButton.setAttribute('data-order', this.currentOrder);
