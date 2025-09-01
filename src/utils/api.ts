@@ -6,8 +6,8 @@ const BASE_URL = 'https://restcountries.com/v3.1';
 export async function fetchAllCountries(): Promise<Country[]> {
   // Try different API strategies in order of preference
   const strategies = [
-    // Strategy 1: Limited fields for better compatibility
-    () => fetch(`${BASE_URL}/all?fields=name,capital,region,population,flags,languages,currencies,cca3`),
+    // Strategy 1: Limited fields for better compatibility (including area for sorting)
+    () => fetch(`${BASE_URL}/all?fields=name,capital,region,population,area,flags,languages,currencies,cca3`),
     // Strategy 2: No field filtering (all data)
     () => fetch(`${BASE_URL}/all`),
     // Strategy 3: Alternative endpoint

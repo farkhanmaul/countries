@@ -384,10 +384,8 @@ let error = null;
       // Sort events
       document.addEventListener('sort-change', (e: Event) => {
         const customEvent = e as CustomEvent;
-        console.log('Sort event received:', customEvent.detail);
         this.currentFilters.sortBy = customEvent.detail.sortBy;
         this.currentFilters.sortOrder = customEvent.detail.order;
-        console.log('Updated filters:', this.currentFilters);
         this.applyFilters();
       });
 
@@ -641,19 +639,6 @@ let error = null;
       }
 
       // Apply sorting
-      if (this.currentFilters.sortBy === 'area' || this.currentFilters.sortBy === 'density') {
-        // Debug: Check data availability for area sorting
-        const sampleCountries = filtered.slice(0, 5);
-        console.log('Sample countries for', this.currentFilters.sortBy, 'sorting:', 
-          sampleCountries.map(c => ({ 
-            name: c.name.common, 
-            area: c.area, 
-            population: c.population,
-            density: c.area ? (c.population / c.area).toFixed(2) : 'N/A'
-          }))
-        );
-      }
-      
       filtered.sort((a, b) => {
         let comparison = 0;
         
@@ -668,14 +653,12 @@ let error = null;
             const areaA = a.area || 0;
             const areaB = b.area || 0;
             comparison = areaA - areaB;
-            console.log(`Area comparison: ${a.name.common} (${areaA}) vs ${b.name.common} (${areaB}) = ${comparison}`);
             break;
           case 'density':
             // Calculate population density (people per km²)
             const densityA = (a.area && a.area > 0) ? (a.population || 0) / a.area : 0;
             const densityB = (b.area && b.area > 0) ? (b.population || 0) / b.area : 0;
             comparison = densityA - densityB;
-            console.log(`Density comparison: ${a.name.common} (${densityA.toFixed(2)}) vs ${b.name.common} (${densityB.toFixed(2)}) = ${comparison}`);
             break;
         }
 
