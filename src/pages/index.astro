@@ -192,8 +192,107 @@ let error = null;
     </div>
   </footer>
 
-  <!-- Modal -->
+  <!-- Country Modal -->
   <CountryModal />
+
+  <!-- Quiz Modal -->
+  <div id="quiz-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-gray-800 rounded-lg max-w-lg w-full p-6">
+      <!-- Quiz Header -->
+      <div class="flex items-center justify-between mb-6">
+        <div class="flex items-center gap-2">
+          <i data-lucide="brain" class="w-5 h-5 text-primary-500"></i>
+          <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Country Quiz</h3>
+        </div>
+        <button id="quiz-close" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <!-- Quiz Content -->
+      <div id="quiz-content">
+        <!-- Quiz Start Screen -->
+        <div id="quiz-start" class="text-center">
+          <div class="mb-6">
+            <div class="w-16 h-16 bg-gradient-to-br from-primary-500 to-accent-500 rounded-full flex items-center justify-center mx-auto mb-4">
+              <i data-lucide="flag" class="w-8 h-8 text-white"></i>
+            </div>
+            <h4 class="text-xl font-bold text-gray-900 dark:text-white mb-2">Test Your Geography Knowledge!</h4>
+            <p class="text-gray-600 dark:text-gray-400">Can you identify countries by their flags and match capitals?</p>
+          </div>
+          
+          <div class="space-y-3">
+            <button id="quiz-start-flags" class="w-full px-4 py-3 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors font-medium">
+              <i data-lucide="flag" class="w-4 h-4 mr-2 inline"></i>
+              Guess the Country by Flag
+            </button>
+            <button id="quiz-start-capitals" class="w-full px-4 py-3 bg-accent-600 text-white rounded-lg hover:bg-accent-700 transition-colors font-medium">
+              <i data-lucide="landmark" class="w-4 h-4 mr-2 inline"></i>
+              Guess the Capital City
+            </button>
+          </div>
+        </div>
+
+        <!-- Quiz Game Screen -->
+        <div id="quiz-game" class="hidden">
+          <!-- Quiz Progress -->
+          <div class="mb-6">
+            <div class="flex justify-between items-center mb-2">
+              <span class="text-sm font-medium text-gray-600 dark:text-gray-400">
+                Question <span id="quiz-current">1</span> of <span id="quiz-total">5</span>
+              </span>
+              <span class="text-sm font-medium text-primary-600 dark:text-primary-400">
+                Score: <span id="quiz-score">0</span>
+              </span>
+            </div>
+            <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+              <div id="quiz-progress" class="bg-gradient-to-r from-primary-500 to-accent-500 h-2 rounded-full transition-all duration-300" style="width: 20%"></div>
+            </div>
+          </div>
+
+          <!-- Quiz Question -->
+          <div class="text-center mb-6">
+            <div id="quiz-question-flag" class="hidden mb-4">
+              <img id="quiz-flag-img" src="" alt="Country flag" class="w-32 h-20 object-cover mx-auto rounded-lg shadow-md border-2 border-gray-200 dark:border-gray-600">
+              <p class="text-lg font-semibold text-gray-900 dark:text-white mt-4">Which country does this flag belong to?</p>
+            </div>
+            <div id="quiz-question-capital" class="hidden">
+              <h4 class="text-2xl font-bold text-primary-600 dark:text-primary-400 mb-2" id="quiz-country-name"></h4>
+              <p class="text-lg font-semibold text-gray-900 dark:text-white">What is the capital city?</p>
+            </div>
+          </div>
+
+          <!-- Quiz Options -->
+          <div class="space-y-3" id="quiz-options">
+            <!-- Options will be generated dynamically -->
+          </div>
+        </div>
+
+        <!-- Quiz Results Screen -->
+        <div id="quiz-results" class="hidden text-center">
+          <div class="mb-6">
+            <div class="w-20 h-20 bg-gradient-to-br from-success-500 to-success-600 rounded-full flex items-center justify-center mx-auto mb-4">
+              <i data-lucide="trophy" class="w-10 h-10 text-white"></i>
+            </div>
+            <h4 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">Quiz Complete!</h4>
+            <p class="text-lg">
+              <span class="text-2xl font-bold text-primary-600 dark:text-primary-400" id="final-score">0</span>
+              <span class="text-gray-600 dark:text-gray-400">out of</span>
+              <span class="text-2xl font-bold text-gray-900 dark:text-white" id="final-total">5</span>
+            </p>
+            <p class="text-gray-600 dark:text-gray-400 mt-2" id="score-message"></p>
+          </div>
+          
+          <div class="space-y-3">
+            <button id="quiz-restart" class="w-full px-4 py-3 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors font-medium">
+              <i data-lucide="refresh-cw" class="w-4 h-4 mr-2 inline"></i>
+              Play Again
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </Layout>
 
 <!-- Main Application Script -->
@@ -288,6 +387,33 @@ let error = null;
       const retryBtn = document.getElementById('retry-button');
       retryBtn?.addEventListener('click', () => {
         this.loadAllCountries();
+      });
+
+      // Quiz events
+      document.addEventListener('quiz-start', () => {
+        this.openQuiz();
+      });
+
+      // Quiz modal events
+      const quizClose = document.getElementById('quiz-close');
+      const quizStartFlags = document.getElementById('quiz-start-flags');
+      const quizStartCapitals = document.getElementById('quiz-start-capitals');
+      const quizRestart = document.getElementById('quiz-restart');
+
+      quizClose?.addEventListener('click', () => {
+        this.closeQuiz();
+      });
+
+      quizStartFlags?.addEventListener('click', () => {
+        this.startQuiz('flags');
+      });
+
+      quizStartCapitals?.addEventListener('click', () => {
+        this.startQuiz('capitals');
+      });
+
+      quizRestart?.addEventListener('click', () => {
+        this.resetQuiz();
       });
     }
 
@@ -738,6 +864,241 @@ let error = null;
       if (resultsCount) {
         resultsCount.textContent = this.filteredCountries.length.toString();
       }
+    }
+
+    // Quiz-related properties
+    private quizCountries: Country[] = [];
+    private currentQuizQuestion: number = 0;
+    private quizScore: number = 0;
+    private quizType: 'flags' | 'capitals' = 'flags';
+    private totalQuizQuestions: number = 10;
+
+    private openQuiz(): void {
+      const quizModal = document.getElementById('quiz-modal');
+      const quizStart = document.getElementById('quiz-start');
+      const quizGame = document.getElementById('quiz-game');
+      const quizResults = document.getElementById('quiz-results');
+
+      if (quizModal && quizStart && quizGame && quizResults) {
+        // Show modal and start screen
+        quizModal.classList.remove('hidden');
+        quizStart.classList.remove('hidden');
+        quizGame.classList.add('hidden');
+        quizResults.classList.add('hidden');
+
+        // Reset quiz state
+        this.currentQuizQuestion = 0;
+        this.quizScore = 0;
+      }
+    }
+
+    private closeQuiz(): void {
+      const quizModal = document.getElementById('quiz-modal');
+      quizModal?.classList.add('hidden');
+    }
+
+    private async startQuiz(type: 'flags' | 'capitals'): void {
+      this.quizType = type;
+
+      // Load countries if not already loaded
+      if (this.allCountries.length === 0) {
+        await this.loadAllCountries();
+      }
+
+      // Filter countries with required data
+      if (type === 'flags') {
+        this.quizCountries = this.allCountries.filter(country => 
+          country.flags?.png && country.name?.common
+        ).slice(0, 50); // Limit to 50 countries for better performance
+      } else {
+        this.quizCountries = this.allCountries.filter(country => 
+          country.capital && country.capital.length > 0 && country.name?.common
+        ).slice(0, 50);
+      }
+
+      // Shuffle countries
+      this.quizCountries = this.shuffleArray([...this.quizCountries]);
+
+      // Show game screen
+      const quizStart = document.getElementById('quiz-start');
+      const quizGame = document.getElementById('quiz-game');
+      
+      quizStart?.classList.add('hidden');
+      quizGame?.classList.remove('hidden');
+
+      // Start first question
+      this.showQuizQuestion();
+    }
+
+    private shuffleArray<T>(array: T[]): T[] {
+      const shuffled = [...array];
+      for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+      }
+      return shuffled;
+    }
+
+    private showQuizQuestion(): void {
+      if (this.currentQuizQuestion >= this.totalQuizQuestions) {
+        this.showQuizResults();
+        return;
+      }
+
+      const currentCountry = this.quizCountries[this.currentQuizQuestion];
+      const questionNumber = document.getElementById('quiz-question-number');
+      const progressBar = document.getElementById('quiz-progress');
+      const questionContainer = document.getElementById('quiz-question');
+      const optionsContainer = document.getElementById('quiz-options');
+
+      if (!questionNumber || !progressBar || !questionContainer || !optionsContainer) return;
+
+      // Update progress
+      questionNumber.textContent = `${this.currentQuizQuestion + 1}`;
+      const progressPercent = ((this.currentQuizQuestion) / this.totalQuizQuestions) * 100;
+      progressBar.style.width = `${progressPercent}%`;
+
+      // Generate wrong options
+      const wrongOptions = this.generateWrongOptions(currentCountry);
+      const allOptions = this.shuffleArray([currentCountry, ...wrongOptions]);
+
+      // Show question based on type
+      if (this.quizType === 'flags') {
+        questionContainer.innerHTML = `
+          <div class="text-center">
+            <img src="${currentCountry.flags?.png}" alt="Flag" class="w-32 h-20 object-cover mx-auto rounded-lg shadow-md border border-gray-200 dark:border-gray-600 mb-4">
+            <p class="text-lg font-medium text-gray-900 dark:text-white">Which country does this flag belong to?</p>
+          </div>
+        `;
+        
+        optionsContainer.innerHTML = allOptions.map(country => `
+          <button 
+            class="quiz-option w-full text-left px-4 py-3 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors duration-200 text-gray-900 dark:text-white"
+            data-country="${country.name?.common}"
+          >
+            ${country.name?.common}
+          </button>
+        `).join('');
+      } else {
+        questionContainer.innerHTML = `
+          <div class="text-center">
+            <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">${currentCountry.name?.common}</h3>
+            <p class="text-lg font-medium text-gray-900 dark:text-white">What is the capital of this country?</p>
+          </div>
+        `;
+        
+        optionsContainer.innerHTML = allOptions.map(country => `
+          <button 
+            class="quiz-option w-full text-left px-4 py-3 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors duration-200 text-gray-900 dark:text-white"
+            data-country="${country.name?.common}"
+          >
+            ${country.capital?.[0] || 'N/A'}
+          </button>
+        `).join('');
+      }
+
+      // Add event listeners to options
+      const optionButtons = optionsContainer.querySelectorAll('.quiz-option');
+      optionButtons.forEach(button => {
+        button.addEventListener('click', (e) => {
+          const selectedCountry = (e.target as HTMLButtonElement).dataset.country;
+          this.handleQuizAnswer(selectedCountry === currentCountry.name?.common, e.target as HTMLButtonElement);
+        });
+      });
+    }
+
+    private generateWrongOptions(correctCountry: Country): Country[] {
+      const availableCountries = this.quizCountries.filter(country => 
+        country.name?.common !== correctCountry.name?.common
+      );
+      
+      const wrongOptions: Country[] = [];
+      const usedIndexes = new Set<number>();
+
+      while (wrongOptions.length < 3 && usedIndexes.size < availableCountries.length) {
+        const randomIndex = Math.floor(Math.random() * availableCountries.length);
+        if (!usedIndexes.has(randomIndex)) {
+          wrongOptions.push(availableCountries[randomIndex]);
+          usedIndexes.add(randomIndex);
+        }
+      }
+
+      return wrongOptions;
+    }
+
+    private handleQuizAnswer(isCorrect: boolean, selectedButton: HTMLButtonElement): void {
+      // Disable all option buttons
+      const optionButtons = document.querySelectorAll('.quiz-option');
+      optionButtons.forEach(button => {
+        button.setAttribute('disabled', 'true');
+      });
+
+      // Show correct/incorrect styling
+      if (isCorrect) {
+        selectedButton.classList.add('bg-green-100', 'dark:bg-green-800', 'border-green-300', 'dark:border-green-600', 'text-green-800', 'dark:text-green-200');
+        this.quizScore++;
+      } else {
+        selectedButton.classList.add('bg-red-100', 'dark:bg-red-800', 'border-red-300', 'dark:border-red-600', 'text-red-800', 'dark:text-red-200');
+        
+        // Highlight correct answer
+        const currentCountry = this.quizCountries[this.currentQuizQuestion];
+        optionButtons.forEach(button => {
+          if (button.dataset.country === currentCountry.name?.common) {
+            button.classList.add('bg-green-100', 'dark:bg-green-800', 'border-green-300', 'dark:border-green-600', 'text-green-800', 'dark:text-green-200');
+          }
+        });
+      }
+
+      // Move to next question after delay
+      setTimeout(() => {
+        this.currentQuizQuestion++;
+        this.showQuizQuestion();
+      }, 1500);
+    }
+
+    private showQuizResults(): void {
+      const quizGame = document.getElementById('quiz-game');
+      const quizResults = document.getElementById('quiz-results');
+      const finalScore = document.getElementById('quiz-final-score');
+      const scorePercentage = document.getElementById('quiz-score-percentage');
+      const scoreMessage = document.getElementById('quiz-score-message');
+
+      if (!quizGame || !quizResults || !finalScore || !scorePercentage || !scoreMessage) return;
+
+      quizGame.classList.add('hidden');
+      quizResults.classList.remove('hidden');
+
+      // Calculate percentage
+      const percentage = Math.round((this.quizScore / this.totalQuizQuestions) * 100);
+
+      // Update results
+      finalScore.textContent = `${this.quizScore}/${this.totalQuizQuestions}`;
+      scorePercentage.textContent = `${percentage}%`;
+
+      // Set message based on performance
+      let message = '';
+      if (percentage >= 90) {
+        message = 'Outstanding! You\'re a geography expert! 🌟';
+      } else if (percentage >= 70) {
+        message = 'Great job! You know your countries well! 🎉';
+      } else if (percentage >= 50) {
+        message = 'Good effort! Keep exploring to learn more! 👍';
+      } else {
+        message = 'Keep practicing! Geography is fascinating! 📚';
+      }
+
+      scoreMessage.textContent = message;
+    }
+
+    private resetQuiz(): void {
+      this.currentQuizQuestion = 0;
+      this.quizScore = 0;
+      
+      const quizResults = document.getElementById('quiz-results');
+      const quizStart = document.getElementById('quiz-start');
+      
+      quizResults?.classList.add('hidden');
+      quizStart?.classList.remove('hidden');
     }
   }
 
