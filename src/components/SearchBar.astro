@@ -27,50 +27,87 @@
       id="search-input"
       type="search"
       placeholder="Search for a country..."
-      class="w-full pl-10 pr-16 py-3 text-gray-900 dark:text-white bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:focus:ring-primary-400 dark:focus:border-primary-400 transition-colors duration-200"
+      class="w-full pl-10 pr-32 py-3 text-gray-900 dark:text-white bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:focus:ring-primary-400 dark:focus:border-primary-400 transition-all duration-200 shadow-sm hover:shadow-md focus:shadow-lg"
       autocomplete="off"
     />
     
-    <!-- Search Button & Clear Button -->
+    <!-- Search Type Badge & Controls -->
     <div class="absolute inset-y-0 right-0 flex items-center pr-2">
+      <!-- Search Type Badge (floating inside input) -->
+      <div class="flex items-center mr-2">
+        <button
+          id="search-type-toggle"
+          type="button"
+          class="group flex items-center gap-2 px-3 py-1.5 bg-primary-50 hover:bg-primary-100 dark:bg-primary-900/30 dark:hover:bg-primary-800/40 border border-primary-200 dark:border-primary-700 rounded-full transition-all duration-200 text-xs font-medium text-primary-700 dark:text-primary-300 hover:scale-105 active:scale-95"
+          aria-label="Change search type"
+        >
+          <i id="search-type-icon" data-lucide="flag" class="w-3 h-3"></i>
+          <span id="search-type-label" class="hidden sm:inline">Name</span>
+          <i data-lucide="chevron-down" class="w-3 h-3 transition-transform duration-200 group-hover:rotate-180"></i>
+        </button>
+        
+        <!-- Search Type Dropdown -->
+        <div 
+          id="search-type-dropdown" 
+          class="hidden absolute top-full right-0 mt-2 w-56 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-xl shadow-xl z-50 overflow-hidden"
+        >
+          <div class="p-2 bg-gray-50 dark:bg-gray-700/50 border-b border-gray-200 dark:border-gray-600">
+            <p class="text-xs font-medium text-gray-600 dark:text-gray-400 uppercase tracking-wide">Search by</p>
+          </div>
+          <div class="py-1">
+            <button type="button" data-search-type="name" class="search-type-option w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-primary-50 dark:hover:bg-primary-900/20 transition-colors duration-150 group">
+              <i data-lucide="flag" class="w-4 h-4 text-primary-600 dark:text-primary-400"></i>
+              <div class="flex-1 text-left">
+                <div class="font-medium">Country Name</div>
+                <div class="text-xs text-gray-500 dark:text-gray-400">Indonesia, United States</div>
+              </div>
+            </button>
+            <button type="button" data-search-type="capital" class="search-type-option w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-primary-50 dark:hover:bg-primary-900/20 transition-colors duration-150 group">
+              <i data-lucide="landmark" class="w-4 h-4 text-primary-600 dark:text-primary-400"></i>
+              <div class="flex-1 text-left">
+                <div class="font-medium">Capital City</div>
+                <div class="text-xs text-gray-500 dark:text-gray-400">Jakarta, Washington DC</div>
+              </div>
+            </button>
+            <button type="button" data-search-type="currency" class="search-type-option w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-primary-50 dark:hover:bg-primary-900/20 transition-colors duration-150 group">
+              <i data-lucide="coins" class="w-4 h-4 text-primary-600 dark:text-primary-400"></i>
+              <div class="flex-1 text-left">
+                <div class="font-medium">Currency</div>
+                <div class="text-xs text-gray-500 dark:text-gray-400">USD, Euro, Rupiah</div>
+              </div>
+            </button>
+            <button type="button" data-search-type="language" class="search-type-option w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-primary-50 dark:hover:bg-primary-900/20 transition-colors duration-150 group">
+              <i data-lucide="languages" class="w-4 h-4 text-primary-600 dark:text-primary-400"></i>
+              <div class="flex-1 text-left">
+                <div class="font-medium">Language</div>
+                <div class="text-xs text-gray-500 dark:text-gray-400">English, Spanish, Indonesian</div>
+              </div>
+            </button>
+            <button type="button" data-search-type="demonym" class="search-type-option w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-primary-50 dark:hover:bg-primary-900/20 transition-colors duration-150 group">
+              <i data-lucide="users" class="w-4 h-4 text-primary-600 dark:text-primary-400"></i>
+              <div class="flex-1 text-left">
+                <div class="font-medium">Nationality</div>
+                <div class="text-xs text-gray-500 dark:text-gray-400">Indonesian, American</div>
+              </div>
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Clear Button -->
       <button
         id="clear-search"
         type="button"
-        class="p-1 mr-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 opacity-0 pointer-events-none transition-opacity duration-200 rounded"
+        class="p-1.5 mr-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 opacity-0 pointer-events-none transition-all duration-200 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700"
         aria-label="Clear search"
       >
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
         </svg>
       </button>
-      <button
-        id="search-button"
-        type="button"
-        class="p-1 text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300 transition-colors duration-200 rounded"
-        aria-label="Search"
-      >
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m21 21-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-        </svg>
-      </button>
     </div>
   </div>
   
-  <!-- Search Type Description -->
-  <div class="flex items-center justify-center mt-3">
-    <div class="flex items-center px-3 py-1 bg-primary-50 dark:bg-primary-900/20 rounded-full border border-primary-200 dark:border-primary-800">
-      <i id="search-type-icon" data-lucide="flag" class="w-4 h-4 mr-2 text-primary-600 dark:text-primary-400"></i>
-      <span id="search-type-label" class="text-sm font-medium text-primary-700 dark:text-primary-300">Country Name</span>
-      <div class="relative ml-2 group">
-        <i data-lucide="info" class="w-3 h-3 text-gray-400 hover:text-primary-500 cursor-help transition-colors duration-200"></i>
-        <!-- Tooltip -->
-        <div class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-gray-900 dark:bg-gray-700 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-50 whitespace-nowrap">
-          <span id="search-description">Search by country name (e.g., "Indonesia", "United States")</span>
-          <div class="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-gray-900 dark:border-t-gray-700"></div>
-        </div>
-      </div>
-    </div>
-  </div>
   
   <!-- Search suggestions (will be populated via JS) -->
   <div 
@@ -86,9 +123,10 @@
     private searchInput: HTMLInputElement | null;
     private clearButton: HTMLButtonElement | null;
     private suggestions: HTMLDivElement | null;
+    private searchTypeToggle: HTMLButtonElement | null;
+    private searchTypeDropdown: HTMLDivElement | null;
     private debounceTimer: number | null = null;
     private currentSearchType: string = 'name';
-    private searchDescription: HTMLElement | null;
     private searchTypeIcon: HTMLElement | null;
     private searchTypeLabel: HTMLElement | null;
 
@@ -96,7 +134,8 @@
       this.searchInput = document.getElementById('search-input') as HTMLInputElement;
       this.clearButton = document.getElementById('clear-search') as HTMLButtonElement;
       this.suggestions = document.getElementById('search-suggestions') as HTMLDivElement;
-      this.searchDescription = document.getElementById('search-description');
+      this.searchTypeToggle = document.getElementById('search-type-toggle') as HTMLButtonElement;
+      this.searchTypeDropdown = document.getElementById('search-type-dropdown') as HTMLDivElement;
       this.searchTypeIcon = document.getElementById('search-type-icon');
       this.searchTypeLabel = document.getElementById('search-type-label');
       
@@ -110,6 +149,24 @@
       document.addEventListener('search-type-changed', (e: Event) => {
         const customEvent = e as CustomEvent;
         this.handleSearchTypeChange(customEvent.detail.searchType);
+      });
+      
+      // Handle search type toggle dropdown
+      this.searchTypeToggle?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        this.toggleSearchTypeDropdown();
+      });
+      
+      // Handle search type option selection
+      document.querySelectorAll('.search-type-option').forEach(option => {
+        option.addEventListener('click', (e) => {
+          const target = e.currentTarget as HTMLElement;
+          const searchType = target.getAttribute('data-search-type');
+          if (searchType) {
+            this.handleSearchTypeChange(searchType);
+            this.closeSearchTypeDropdown();
+          }
+        });
       });
 
       // Handle input events
@@ -130,11 +187,16 @@
         }
       });
 
-      // Handle click outside to close suggestions
+      // Handle click outside to close suggestions and dropdown
       document.addEventListener('click', (e) => {
         if (!this.searchInput?.contains(e.target as Node) && 
             !this.suggestions?.contains(e.target as Node)) {
           this.hideSuggestions();
+        }
+        
+        if (!this.searchTypeToggle?.contains(e.target as Node) &&
+            !this.searchTypeDropdown?.contains(e.target as Node)) {
+          this.closeSearchTypeDropdown();
         }
       });
 
@@ -213,6 +275,23 @@
         this.suggestions.classList.add('hidden');
       }
     }
+    
+    private toggleSearchTypeDropdown(): void {
+      if (this.searchTypeDropdown) {
+        this.searchTypeDropdown.classList.toggle('hidden');
+        
+        // Close suggestions when opening dropdown
+        if (!this.searchTypeDropdown.classList.contains('hidden')) {
+          this.hideSuggestions();
+        }
+      }
+    }
+    
+    private closeSearchTypeDropdown(): void {
+      if (this.searchTypeDropdown) {
+        this.searchTypeDropdown.classList.add('hidden');
+      }
+    }
 
     public updateSuggestions(countries: string[]): void {
       if (!this.suggestions) return;
@@ -264,38 +343,33 @@
     }
 
     private updateSearchPlaceholder(searchType: string): void {
-      if (!this.searchInput || !this.searchDescription || !this.searchTypeIcon || !this.searchTypeLabel) return;
+      if (!this.searchInput || !this.searchTypeIcon || !this.searchTypeLabel) return;
 
       const searchConfigs = {
         name: {
           icon: 'flag',
-          label: 'Country Name',
-          placeholder: 'Search for a country...',
-          description: 'Search by country name (e.g., "Indonesia", "United States")'
+          label: 'Name',
+          placeholder: 'Search by country name...'
         },
         capital: {
           icon: 'landmark',
-          label: 'Capital City',
-          placeholder: 'Search by capital city...',
-          description: 'Search by capital city (e.g., "Jakarta", "Washington")'
+          label: 'Capital',
+          placeholder: 'Search by capital city...'
         },
         currency: {
           icon: 'coins',
           label: 'Currency',
-          placeholder: 'Search by currency...',
-          description: 'Search by currency (e.g., "USD", "Euro", "Rupiah")'
+          placeholder: 'Search by currency...'
         },
         language: {
           icon: 'languages',
           label: 'Language',
-          placeholder: 'Search by language...',
-          description: 'Search by language (e.g., "English", "Spanish", "Indonesian")'
+          placeholder: 'Search by language...'
         },
         demonym: {
           icon: 'users',
           label: 'People',
-          placeholder: 'Search by people...',
-          description: 'Search by what people are called (e.g., "Indonesian", "American")'
+          placeholder: 'Search by nationality...'
         }
       };
 
@@ -304,7 +378,16 @@
         this.searchTypeIcon.setAttribute('data-lucide', config.icon);
         this.searchTypeLabel.textContent = config.label;
         this.searchInput.placeholder = config.placeholder;
-        this.searchDescription.textContent = config.description;
+        
+        // Update active state in dropdown options
+        document.querySelectorAll('.search-type-option').forEach(option => {
+          const optionType = option.getAttribute('data-search-type');
+          if (optionType === searchType) {
+            option.classList.add('bg-primary-50', 'dark:bg-primary-900/20');
+          } else {
+            option.classList.remove('bg-primary-50', 'dark:bg-primary-900/20');
+          }
+        });
         
         // Re-initialize Lucide icons for the updated icon
         if (typeof lucide !== 'undefined') {
